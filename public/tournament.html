@@ -154,7 +154,8 @@
     }
     
     try {
-        const response = await fetch('https://obsidian-2-ma5s.onrender.com/api/profile', {
+        // POINTED TO NEW RENDER URL
+        const response = await fetch('https://obsidian-oda1.onrender.com/api/profile', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -230,7 +231,8 @@
                                               .filter(cb => cb.checked && cb.value !== 'all')
                                               .map(cb => cb.value);
 
-                let url = new URL('https://obsidian-2-ma5s.onrender.com/api/matches');
+                // POINTED TO NEW RENDER URL
+                let url = new URL('https://obsidian-oda1.onrender.com/api/matches');
                 
                 if (!isAllChecked && activeCategories.length > 0) {
                     url.searchParams.append('game', activeCategories[0]);

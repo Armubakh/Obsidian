@@ -140,7 +140,8 @@
             }
             
             try {
-                const response = await fetch('https://obsidian-2-ma5s.onrender.com/api/profile', {
+                // POINTED TO NEW RENDER URL
+                const response = await fetch('https://obsidian-oda1.onrender.com/api/profile', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
@@ -188,7 +189,8 @@
                 grid.innerHTML = '<p class="text-cyan-400 font-orbitron animate-pulse col-span-full text-center py-10 tracking-widest uppercase">Syncing with Obsidian Inventory...</p>';
 
                 try {
-                    const response = await fetch('https://obsidian-2-ma5s.onrender.com/api/products');
+                    // POINTED TO NEW RENDER URL
+                    const response = await fetch('https://obsidian-oda1.onrender.com/api/products');
                     if (!response.ok) throw new Error('Failed to fetch inventory');
                     const dbProducts = await response.json();
 
