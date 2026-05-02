@@ -13,13 +13,10 @@ const matchCache = {};
 const CACHE_DURATION = 60 * 1000; 
 
 // --- CORS SETUP ---
-// Allows your Vercel frontend to talk to this Render backend.
-// Replace the Vercel placeholder URL with your actual one once deployed.
 const corsOptions = {
     origin: [
-        'http://127.0.0.1:5500', 
         'http://localhost:5500', 
-        'https://your-actual-vercel-project-name.vercel.app'
+        'https://obsidian-nine-ashy.vercel.app' // NO slash at the very end
     ],
     optionsSuccessStatus: 200
 };
