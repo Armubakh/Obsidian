@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBSIDIAN - Tournament Bracket</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; background: #050510; color: #fff; overflow-x: hidden; }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .synth-bg { background: linear-gradient(to bottom, #050510 0%, #1a0b2e 100%); position: fixed; inset: 0; z-index: -1; }
+        .synth-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(109, 40, 217, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(109, 40, 217, 0.15) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg); transform-origin: center top; animation: gridMove 20s linear infinite; }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 100%; } }
+        .glass-card { background: rgba(10, 10, 25, 0.8); backdrop-filter: blur(25px); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .brand-logo { width: 45px; filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5)); transition: transform 0.3s ease; }
+        .brand-logo:hover { transform: scale(1.1); }
+        .nav-link { font-size: 10px; font-weight: 900; letter-spacing: 0.4em; cursor: pointer; transition: all 0.3s ease; }
+        .nav-link.active { color: #8b5cf6; text-decoration: underline; text-underline-offset: 8px; text-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
+        .bracket-container { border-radius: 1.5rem; overflow: hidden; border: 1px solid rgba(34, 211, 238, 0.3); box-shadow: 0 0 30px rgba(34, 211, 238, 0.1); background: #0b0b14; }
+        
+        .pfp-icon { width: 35px; height: 35px; border-radius: 50%; border: 2px solid rgba(34, 211, 238, 0.5); object-fit: cover; transition: transform 0.3s ease, border-color 0.3s ease; cursor: pointer; }
+        .pfp-icon:hover { transform: scale(1.1); border-color: #fff; }
+        
+        .bracket-container iframe {
+            filter: hue-rotate(260deg) saturate(2) brightness(0.9) contrast(1.2);
+            transition: filter 0.3s ease;
+        }
+        .bracket-container:hover iframe {
+            filter: hue-rotate(260deg) saturate(2.5) brightness(1) contrast(1.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center">
+
+    <div class="synth-bg"><div class="synth-grid"></div></div>
+
+    <nav class="fixed top-0 w-full z-50 p-6 px-12 flex justify-between items-center bg-gradient-to-b from-black/90 to-transparent backdrop-blur-sm">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='index.html'">
+            <img src="Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png" class="brand-logo" alt="Logo">
+            <div>
+                <h1 class="font-orbitron text-xl font-black text-cyan-400 tracking-tighter uppercase">Obsidian</h1>
+                <p class="text-[8px] text-fuchsia-500 tracking-[0.4em] uppercase font-bold">Gaming Redefined</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-8 font-orbitron uppercase text-white/50 tracking-[0.4em]">
+            <a href="index.html" class="nav-link hover:text-white">HOME</a>
+            <a href="tournament.html" class="nav-link hover:text-white">MATCHES</a>
+            <a href="bracket.html" class="nav-link active text-cyan-400">BRACKETS</a>
+            <a href="marketplace.html" class="nav-link hover:text-white">MARKETPLACE</a>
+            <a href="chats.html" class="nav-link hover:text-white">CHATS</a>
+            <a href="portfolio.html">
+                <img src="armughan-pfp.jpg" alt="Profile" class="pfp-icon" onerror="this.src='https://i.pravatar.cc/300?u=armughan'">
+            </a>
+        </div>
+    </nav>
+
+    <main class="w-full max-w-7xl mt-32 mb-20 px-6 flex flex-col lg:flex-row gap-8">
+        
+        <aside class="w-full lg:w-1/3 flex flex-col gap-6">
+            
+            <div class="glass-card rounded-[2rem] p-8">
+                <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6">
+                    <h2 class="font-orbitron text-3xl font-black uppercase text-white">Valorant <span class="text-red-500">Showdown</span></h2>
+                    <p class="text-xs text-white/60 tracking-widest uppercase mt-2">ID: #VAL-8834 | Region: MEA</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 font-orbitron text-[10px] uppercase font-bold text-center">
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <p class="text-white/40 mb-1">Prize Pool</p>
+                        <p class="text-lg text-cyan-400">Rs 50,000</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <p class="text-white/40 mb-1">Date</p>
+                        <p class="text-lg text-fuchsia-400">24-AUG-26</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <p class="text-white/40 mb-1">Format</p>
+                        <p class="text-lg text-white">5v5</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                        <p class="text-white/40 mb-1">Teams</p>
+                        <p class="text-lg text-white">16 / 32</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-[2rem] p-8 text-center relative overflow-hidden">
+                <div id="regFormArea" class="w-full space-y-6">
+                    <h3 class="font-orbitron text-fuchsia-500 font-black text-sm tracking-[0.3em] uppercase border-b border-white/10 pb-4">Tournament Registration</h3>
+                    
+                    <div class="space-y-4 text-left">
+                        <div>
+                            <label class="font-orbitron text-[9px] text-white/50 tracking-widest uppercase ml-2">In-Game Riot ID</label>
+                            <input type="text" id="ign" placeholder="e.g. Armughan#NA1" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-xs outline-none focus:border-cyan-400 text-white transition mt-1">
+                        </div>
+                        <div>
+                            <label class="font-orbitron text-[9px] text-white/50 tracking-widest uppercase ml-2">Discord ID</label>
+                            <input type="text" id="discord" placeholder="Username#0000" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-xs outline-none focus:border-cyan-400 text-white transition mt-1">
+                        </div>
+                    </div>
+
+                    <button onclick="submitRegistration()" class="w-full py-4 bg-gradient-to-r from-purple-600 to-cyan-500 hover:scale-105 rounded-xl font-orbitron font-black text-[11px] tracking-[0.4em] transition shadow-[0_0_20px_rgba(168,85,247,0.4)]">
+                        LOCK IN
+                    </button>
+                </div>
+
+                <div id="regSuccessArea" class="hidden flex flex-col items-center justify-center py-10 space-y-4">
+                    <div class="w-16 h-16 bg-cyan-500/20 rounded-full flex items-center justify-center border border-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.5)]">
+                        <svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <h3 class="font-orbitron text-cyan-400 font-black text-2xl tracking-[0.2em] uppercase animate-pulse">REGISTERED</h3>
+                    <p class="text-xs text-white/60 font-mono text-center">Your roster is locked.<br>Awaiting bracket seeding.</p>
+                </div>
+            </div>
+        </aside>
+
+        <section class="w-full lg:w-2/3 flex flex-col">
+            <div class="glass-card rounded-[2rem] p-6 h-full flex flex-col">
+                <div class="flex justify-between items-center mb-6 px-2">
+                    <h3 class="font-orbitron text-xl font-black tracking-widest uppercase text-white">Live Bracket</h3>
+                    <span class="flex items-center gap-2 text-[9px] font-orbitron tracking-widest uppercase text-fuchsia-400 font-bold bg-fuchsia-500/10 border border-fuchsia-500/30 px-3 py-1.5 rounded-full">
+                        <div class="w-2 h-2 rounded-full bg-fuchsia-500 animate-pulse"></div> Auto-Updating
+                    </span>
+                </div>
+                
+                <div class="bracket-container flex-1 min-h-[600px] w-full relative">
+                    <div id="bracketContainer" class="w-full min-h-[600px] flex items-center justify-center border border-white/10 rounded-[2rem] bg-black/40 mt-8">
+                        <p class="text-white/30 font-orbitron text-xs tracking-widest uppercase">No bracket generated yet.</p>
+                    </div>
+                    <div class="mb-6 mt-6 px-4">
+                        <label class="font-orbitron text-[10px] text-fuchsia-400 tracking-[0.3em] uppercase mb-3 block font-bold">Participating Teams (One per line)</label>
+                        <textarea 
+                            id="teamListInput" 
+                            rows="6" 
+                            class="w-full bg-black/50 border border-white/10 rounded-2xl p-4 text-[11px] font-orbitron text-white outline-none focus:border-cyan-400 transition shadow-[inset_0_0_20px_rgba(0,0,0,0.5)] resize-none placeholder-white/20" 
+                            placeholder="Sentinels&#10;LOUD&#10;Paper Rex&#10;Gen.G"
+                        ></textarea>
+                        <p class="text-[9px] text-white/30 uppercase tracking-widest mt-2">Enter 4, 8, 16, or 32 teams for a perfect bracket.</p>
+                    </div>
+                    <button onclick="generateBracket()" class="w-full bg-gradient-to-r from-purple-600 to-cyan-500 hover:scale-105 transition shadow-[0_0_15px_rgba(6,182,212,0.4)] text-white px-8 py-4 rounded-2xl font-orbitron text-[12px] tracking-widest font-black uppercase mb-4">
+                        Generate New Bracket
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function submitRegistration() {
+            const ign = document.getElementById('ign').value;
+            const discord = document.getElementById('discord').value;
+            if (ign.trim() === "" || discord.trim() === "") {
+                alert("Please fill in both your Riot ID and Discord ID to register.");
+                return;
+            }
+            document.getElementById('regFormArea').classList.add('hidden');
+            const successArea = document.getElementById('regSuccessArea');
+            successArea.classList.remove('hidden');
+            console.log(`[API REQUEST] POST /api/register -> Payload: { userId: 1, tournamentId: 1, ign: "${ign}", discord: "${discord}" }`);
+        }
+        
+        async function generateBracket() {
+            const container = document.getElementById('bracketContainer');
+            const rawText = document.getElementById('teamListInput').value;
+            const dynamicTeams = rawText.split('\n').map(team => team.trim()).filter(team => team !== "");
+
+            if (dynamicTeams.length < 2) {
+                alert("Please enter at least 2 teams to generate a bracket.");
+                return;
+            }
+
+            container.innerHTML = '<p class="text-cyan-400 font-orbitron text-xs animate-pulse text-center w-full">BUILDING BRACKET ARCHITECTURE...</p>';
+
+            try {
+                const response = await fetch('http://localhost:5000/api/bracket/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        tournament_name: "Valorant Showdown", 
+                        game: "Valorant",
+                        teams: dynamicTeams
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    container.innerHTML = `
+                        <iframe 
+                            src="${data.iframe_url}" 
+                            width="100%" 
+                            height="100%" 
+                            frameborder="0" 
+                            scrolling="auto" 
+                            allowtransparency="true"
+                            style="min-height: 500px; border-radius: 1rem;">
+                        </iframe>
+                    `;
+                } else {
+                    container.innerHTML = '<p class="text-red-500 text-center w-full">API Error: Check Node.js Console</p>';
+                }
+            } catch (error) {
+                console.error("Network Error:", error);
+                container.innerHTML = '<p class="text-red-500 text-center w-full">Failed to connect to Obsidian Backend.</p>';
+            }
+        }
+    </script>
+</body>
+</html>

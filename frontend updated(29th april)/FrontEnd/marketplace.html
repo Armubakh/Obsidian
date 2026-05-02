@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBSIDIAN - Marketplace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; background: #050510; color: #fff; overflow-x: hidden; }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .synth-bg { background: linear-gradient(to bottom, #050510 0%, #1a0b2e 100%); position: fixed; inset: 0; z-index: -1; }
+        .synth-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(109, 40, 217, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(109, 40, 217, 0.15) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg); transform-origin: center top; animation: gridMove 20s linear infinite; }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 100%; } }
+        .glass-card { background: rgba(10, 10, 25, 0.8); backdrop-filter: blur(25px); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .product-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; }
+        .product-card.hidden { display: none; }
+        .product-card:hover { transform: translateY(-5px); border-color: #22d3ee; box-shadow: 0 10px 30px -10px rgba(34, 211, 238, 0.3); }
+        .brand-logo { width: 45px; filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5)); transition: transform 0.3s ease; }
+        .brand-logo:hover { transform: scale(1.1); }
+        .nav-link { font-size: 10px; font-weight: 900; letter-spacing: 0.4em; cursor: pointer; transition: all 0.3s ease; }
+        .nav-link.active { color: #8b5cf6; text-decoration: underline; text-underline-offset: 8px; text-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
+        .filter-checkbox { display: none; }
+        .filter-label { display: flex; items-center; gap: 1rem; cursor: pointer; }
+        .filter-box { width: 24px; height: 24px; border-radius: 4px; display: inline-block; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s ease; opacity: 0.5; }
+        .filter-checkbox:checked + .filter-label .filter-box { opacity: 1; border-color: #fff; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        .color-1 { background: linear-gradient(135deg, #a855f7, #3b82f6); }
+        .color-2 { background: #8b5cf6; }
+        .color-3 { background: #1e1e2f; }
+        .color-4 { background: linear-gradient(135deg, #06b6d4, #10b981); }
+        
+        /* PFP ICON Styling */
+        .pfp-icon { width: 35px; height: 35px; border-radius: 50%; border: 2px solid rgba(34, 211, 238, 0.5); object-fit: cover; transition: transform 0.3s ease, border-color 0.3s ease; cursor: pointer; }
+        .pfp-icon:hover { transform: scale(1.1); border-color: #fff; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center">
+
+    <div class="synth-bg"><div class="synth-grid"></div></div>
+
+    <nav class="fixed top-0 w-full z-50 p-6 px-12 flex justify-between items-center bg-gradient-to-b from-black/90 to-transparent backdrop-blur-sm">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='index.html'">
+            <img src="Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png" class="brand-logo" alt="Logo">
+            <div>
+                <h1 class="font-orbitron text-xl font-black text-cyan-400 tracking-tighter uppercase">Obsidian</h1>
+                <p class="text-[8px] text-fuchsia-500 tracking-[0.4em] uppercase font-bold">Gaming Redefined</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-8 font-orbitron uppercase text-white/50 tracking-[0.4em]">
+            <a href="index.html" class="nav-link hover:text-white">HOME</a>
+            <a href="tournament.html" class="nav-link hover:text-white">MATCHES</a>
+            <a href="bracket.html" class="nav-link hover:text-white">BRACKETS</a>
+            <a href="marketplace.html" class="nav-link active text-fuchsia-500">MARKETPLACE</a>
+            <a href="chats.html" class="nav-link hover:text-white">CHATS</a>
+            <a href="portfolio.html">
+                <img src="armughan-pfp.jpg" alt="Profile" class="pfp-icon" onerror="this.src='https://i.pravatar.cc/300?u=armughan'">
+            </a>
+        </div>
+    </nav>
+
+    <main class="w-full max-w-7xl mt-32 mb-20 px-6 flex flex-col lg:flex-row gap-8">
+        
+        <aside class="w-full lg:w-1/4 glass-card rounded-[2rem] p-8 h-fit sticky top-32">
+            <h3 class="font-orbitron text-lg font-black tracking-widest mb-4 uppercase text-white">Search</h3>
+            <input type="text" id="searchInput" placeholder="Search gear, accounts..." class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-xs outline-none focus:border-cyan-400 text-white mb-10 transition">
+
+            <h3 class="font-orbitron text-lg font-black tracking-widest mb-6 uppercase text-white">Filters</h3>
+            
+            <div class="flex flex-col gap-6 mb-10" id="filterContainer">
+                <div>
+                    <input type="checkbox" id="filter-all" class="filter-checkbox" value="all" checked>
+                    <label for="filter-all" class="filter-label group">
+                        <span class="filter-box color-4"></span>
+                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">All Products</span>
+                    </label>
+                </div>
+                <div>
+                    <input type="checkbox" id="filter-hardware" class="filter-checkbox" value="hardware">
+                    <label for="filter-hardware" class="filter-label group">
+                        <span class="filter-box color-1"></span>
+                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Hardware</span>
+                    </label>
+                </div>
+                <div>
+                    <input type="checkbox" id="filter-accounts" class="filter-checkbox" value="account">
+                    <label for="filter-accounts" class="filter-label group">
+                        <span class="filter-box color-2"></span>
+                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Accounts</span>
+                    </label>
+                </div>
+                <div>
+                    <input type="checkbox" id="filter-skins" class="filter-checkbox" value="skins">
+                    <label for="filter-skins" class="filter-label group">
+                        <span class="filter-box color-3"></span>
+                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Skins</span>
+                    </label>
+                </div>
+            </div>
+            <hr class="border-white/10 mb-6">
+            <div class="flex justify-between items-center text-xs font-orbitron font-bold text-white/50">
+                <label class="flex items-center gap-2 cursor-pointer hover:text-white transition">
+                    <input type="radio" name="sort" class="accent-cyan-400 w-4 h-4" checked> High to Low
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer hover:text-white transition">
+                    <input type="radio" name="sort" class="accent-cyan-400 w-4 h-4"> Low to High
+                </label>
+            </div>
+        </aside>
+
+        <section class="w-full lg:w-3/4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="productGrid">
+            
+            <div class="product-card rounded-[2rem] p-6 flex flex-col relative overflow-hidden group" data-category="hardware">
+                <div class="w-full h-40 bg-black/40 rounded-xl mb-4 p-4 flex items-center justify-center relative">
+                    <span class="absolute top-2 left-2 bg-purple-600 text-white text-[8px] font-bold px-2 py-1 rounded uppercase tracking-widest">Hardware</span>
+                    <img src="logitech.jpg" alt="Logitech G502" class="object-cover w-full h-full mix-blend-screen group-hover:scale-110 transition duration-500">
+                </div>
+                <h4 class="font-orbitron text-lg font-black uppercase text-white">Logitech G502</h4>
+                <p class="text-[10px] text-white/40 font-mono mt-2 mb-4 leading-relaxed line-clamp-3">Precision Gaming Mouse.</p>
+                <div class="mt-auto flex items-center justify-between">
+                    <div><p class="text-[9px] text-white/50 uppercase tracking-widest mb-1">Price</p><p class="font-orbitron text-xl font-black text-cyan-400">Rs 14,500</p></div>
+                    <a href="https://techarc.pk/" target="_blank" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:scale-105 transition shadow-[0_0_15px_rgba(6,182,212,0.4)] text-white px-6 py-3 rounded-xl font-orbitron text-[10px] tracking-widest font-black uppercase text-center">Buy via TechArc</a>
+                </div>
+            </div>
+
+            <div class="product-card rounded-[2rem] p-6 flex flex-col relative overflow-hidden group" data-category="hardware">
+                <div class="w-full h-40 bg-black/40 rounded-xl mb-4 p-4 flex items-center justify-center relative overflow-hidden">
+                    <span class="absolute top-2 left-2 bg-purple-600 text-white text-[8px] font-bold px-2 py-1 rounded uppercase tracking-widest">Hardware</span>
+                    <img src="wooting.jpg" alt="Wooting 60HE" class="object-cover w-full h-full group-hover:scale-110 transition duration-500">
+                </div>
+                <h4 class="font-orbitron text-lg font-black uppercase text-white">Wooting 60HE</h4>
+                <p class="text-[10px] text-white/40 font-mono mt-2 mb-4 leading-relaxed line-clamp-3">0.1ms Response Time + HE.</p>
+                <div class="mt-auto flex items-center justify-between">
+                    <div><p class="text-[9px] text-white/50 uppercase tracking-widest mb-1">Price</p><p class="font-orbitron text-xl font-black text-cyan-400">Rs 65,000</p></div>
+                    <a href="https://junaidtech.pk/" target="_blank" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:scale-105 transition shadow-[0_0_15px_rgba(6,182,212,0.4)] text-white px-6 py-3 rounded-xl font-orbitron text-[10px] tracking-widest font-black uppercase text-center">Buy via JunaidTech</a>
+                </div>
+            </div>
+
+            <div class="product-card rounded-[2rem] p-6 flex flex-col relative overflow-hidden group" data-category="hardware">
+                <div class="w-full h-40 bg-white/5 rounded-xl mb-4 p-4 flex items-center justify-center relative">
+                    <span class="absolute top-2 left-2 bg-purple-600 text-white text-[8px] font-bold px-2 py-1 rounded uppercase tracking-widest">Hardware</span>
+                    <img src="hyperX.jpg" alt="HyperX Cloud III" class="object-contain w-full h-full group-hover:scale-110 transition duration-500 drop-shadow-2xl">
+                </div>
+                <h4 class="font-orbitron text-lg font-black uppercase text-white">HyperX Cloud 3</h4>
+                <p class="text-[10px] text-white/40 font-mono mt-2 mb-4 leading-relaxed line-clamp-3">7.1 Surround Sound.</p>
+                <div class="mt-auto flex items-center justify-between">
+                    <div><p class="text-[9px] text-white/50 uppercase tracking-widest mb-1">Price</p><p class="font-orbitron text-xl font-black text-cyan-400">Rs 28,000</p></div>
+                    <a href="https://www.czone.com.pk/" target="_blank" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:scale-105 transition shadow-[0_0_15px_rgba(6,182,212,0.4)] text-white px-6 py-3 rounded-xl font-orbitron text-[10px] tracking-widest font-black uppercase text-center">Buy via CZone</a>
+                </div>
+            </div>
+
+            <div class="product-card rounded-[2rem] p-6 flex flex-col relative overflow-hidden group border-fuchsia-500/30" data-category="account">
+                <div class="w-full h-40 bg-black/40 rounded-xl mb-4 p-4 flex items-center justify-center relative overflow-hidden">
+                    <span class="absolute top-2 left-2 bg-orange-500 text-black text-[8px] font-bold px-2 py-1 rounded uppercase tracking-widest">Account</span>
+                    <img src="asc.png" alt="Ascendant" class="object-contain h-24 drop-shadow-[0_0_15px_rgba(46,204,113,0.5)] group-hover:scale-110 transition duration-500">
+                </div>
+                <h4 class="font-orbitron text-lg font-black uppercase text-white">Valo Ascendant Smurf</h4>
+                <p class="text-[10px] text-white/40 font-mono mt-2 mb-4 leading-relaxed line-clamp-3">Full access. Omen Main. Battlepass completed.</p>
+                <div class="mt-auto flex items-center justify-between">
+                    <div><p class="text-[9px] text-white/50 uppercase tracking-widest mb-1">Price</p><p class="font-orbitron text-xl font-black text-fuchsia-400">$35.00</p></div>
+                    <a href="chats.html?chat=5" class="bg-white/10 hover:bg-white/20 border border-white/20 transition text-white px-6 py-3 rounded-xl font-orbitron text-[10px] tracking-widest font-black uppercase text-center">
+                        Message Seller
+                    </a>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const checkboxes = document.querySelectorAll('.filter-checkbox');
+            const searchInput = document.getElementById('searchInput');
+            const products = document.querySelectorAll('.product-card');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const activeFilter = urlParams.get('filter');
+            
+            if (activeFilter) {
+                checkboxes.forEach(cb => { cb.checked = (cb.value === activeFilter); });
+            }
+
+            function handleFilterChange(e) {
+                const changedBox = e.target;
+                if(changedBox.value === 'all' && changedBox.checked) {
+                    checkboxes.forEach(cb => { if(cb.value !== 'all') cb.checked = false; });
+                } 
+                else if (changedBox.value !== 'all' && changedBox.checked) {
+                    document.getElementById('filter-all').checked = false;
+                }
+                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                if(!anyChecked) document.getElementById('filter-all').checked = true;
+
+                applyFilters();
+            }
+
+            function applyFilters() {
+                const isAllChecked = document.getElementById('filter-all').checked;
+                const activeCategories = Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+                const searchText = searchInput.value.toLowerCase();
+
+                products.forEach(card => {
+                    const category = card.getAttribute('data-category');
+                    const title = card.querySelector('h4').textContent.toLowerCase();
+                    
+                    const matchesCategory = isAllChecked || activeCategories.includes(category);
+                    const matchesSearch = title.includes(searchText);
+
+                    if (matchesCategory && matchesSearch) {
+                        card.classList.remove('hidden');
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+            }
+
+            checkboxes.forEach(cb => cb.addEventListener('change', handleFilterChange));
+            searchInput.addEventListener('input', applyFilters);
+            
+            applyFilters();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBSIDIAN - Player Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; background: #050510; color: #fff; overflow-x: hidden; }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .synth-bg { background: linear-gradient(to bottom, #050510 0%, #1a0b2e 100%); position: fixed; inset: 0; z-index: -1; }
+        .synth-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(109, 40, 217, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(109, 40, 217, 0.15) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg); transform-origin: center top; animation: gridMove 20s linear infinite; }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 100%; } }
+        .glass-card { background: rgba(10, 10, 25, 0.8); backdrop-filter: blur(25px); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .stat-box { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); transition: transform 0.3s ease, border-color 0.3s ease; }
+        .stat-box:hover { transform: translateY(-5px); border-color: #22d3ee; }
+        .progress-bar { transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .brand-logo { width: 45px; filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5)); transition: transform 0.3s ease; }
+        .brand-logo:hover { transform: scale(1.1); }
+        .nav-link { font-size: 10px; font-weight: 900; letter-spacing: 0.4em; cursor: pointer; transition: all 0.3s ease; }
+        .nav-link.active { color: #8b5cf6; text-decoration: underline; text-underline-offset: 8px; text-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050510; }
+        ::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.5); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(34, 211, 238, 0.8); }
+        
+        .pfp-icon { width: 35px; height: 35px; border-radius: 50%; border: 2px solid rgba(34, 211, 238, 0.5); object-fit: cover; transition: transform 0.3s ease, border-color 0.3s ease; cursor: pointer; }
+        .pfp-icon:hover { transform: scale(1.1); border-color: #fff; }
+
+        /* Dropdown & Modal Styles */
+        .profile-dropdown { transform-origin: top right; transition: all 0.2s ease; transform: scale(0.95); opacity: 0; pointer-events: none; }
+        .profile-dropdown.show { transform: scale(1); opacity: 1; pointer-events: auto; }
+        
+        input[type="file"]::file-selector-button {
+            background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.3); color: #22d3ee;
+            padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-family: 'Orbitron', sans-serif;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; transition: all 0.3s ease;
+        }
+        input[type="file"]::file-selector-button:hover { background: rgba(34, 211, 238, 0.3); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center">
+
+    <div class="synth-bg"><div class="synth-grid"></div></div>
+
+    <nav class="fixed top-0 w-full z-50 p-6 px-12 flex justify-between items-center bg-gradient-to-b from-black/90 to-transparent backdrop-blur-sm">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='index.html'">
+            <img src="Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png" class="brand-logo" alt="Logo">
+            <div>
+                <h1 class="font-orbitron text-xl font-black text-cyan-400 tracking-tighter uppercase">Obsidian</h1>
+                <p class="text-[8px] text-fuchsia-500 tracking-[0.4em] uppercase font-bold">Gaming Redefined</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-8 font-orbitron uppercase text-white/50 tracking-[0.4em]">
+            <a href="index.html" class="nav-link hover:text-white">HOME</a>
+            <a href="tournament.html" class="nav-link hover:text-white">MATCHES</a>
+            <a href="bracket.html" class="nav-link hover:text-white">BRACKETS</a>
+            <a href="marketplace.html" class="nav-link hover:text-white">MARKETPLACE</a>
+            <a href="chats.html" class="nav-link hover:text-white">CHATS</a>
+            
+            <div class="relative">
+                <img id="navPfp" src="armughan-pfp.jpg" alt="Profile" class="pfp-icon border-[#8b5cf6] shadow-[0_0_15px_rgba(139,92,246,0.8)]" onerror="this.src='https://i.pravatar.cc/300?u=armughan'" onclick="toggleDropdown(event)">
+                
+                <div id="profileMenu" class="profile-dropdown absolute right-0 mt-4 w-64 bg-[rgba(10,10,25,0.95)] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-50">
+                    <div class="px-4 py-3 border-b border-white/5 mb-2">
+                        <p class="text-[10px] tracking-widest text-white/40 uppercase">Signed in as</p>
+                        <p id="dropdownName" class="font-bold text-cyan-400 text-sm truncate">User</p>
+                    </div>
+                    <button onclick="openEditModal()" class="w-full text-left px-4 py-3 text-[10px] font-bold text-white hover:bg-white/5 rounded-xl transition tracking-widest uppercase flex items-center gap-2">
+                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        Edit Profile
+                    </button>
+                    <button onclick="handleLogout()" class="w-full text-left px-4 py-3 text-[10px] font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition tracking-widest uppercase flex items-center gap-2 mt-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        Log Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="editModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+        <div class="glass-card w-full max-w-lg rounded-[2rem] p-8 relative border border-fuchsia-500/50 shadow-[0_0_50px_rgba(217,70,239,0.2)]">
+            <button onclick="closeEditModal()" class="absolute top-6 right-6 text-white/50 hover:text-white transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="font-orbitron text-xl font-black text-white mb-6 uppercase tracking-widest border-b border-white/10 pb-4">Profile Settings</h3>
+            
+            <form id="editProfileForm" class="space-y-6" onsubmit="saveProfile(event)">
+                <div>
+                    <label class="font-orbitron text-[10px] text-fuchsia-400 tracking-[0.3em] uppercase block mb-2 font-bold">Valorant Riot ID</label>
+                    <input type="text" id="newRiotId" placeholder="e.g. Armughan#NA1" class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-cyan-400 transition text-white">
+                </div>
+
+                <div>
+                    <label class="font-orbitron text-[10px] text-cyan-400 tracking-[0.3em] uppercase block mb-2 font-bold">Profile Picture</label>
+                    <div class="flex items-center gap-4 bg-black/30 p-3 rounded-xl border border-white/5">
+                        <img id="modalPfpPreview" src="armughan-pfp.jpg" class="w-12 h-12 rounded-full border border-white/20 object-cover" onerror="this.src='https://i.pravatar.cc/300'">
+                        <input type="file" id="pfpUpload" accept="image/*" class="text-xs text-white/50 file:mr-4 file:border-0 file:bg-cyan-500/10 file:text-cyan-400 hover:file:bg-cyan-500/20">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="font-orbitron text-[10px] text-emerald-400 tracking-[0.3em] uppercase block mb-2 font-bold">Background Banner</label>
+                    <div class="bg-black/30 p-3 rounded-xl border border-white/5">
+                        <input type="file" id="bannerUpload" accept="image/*" class="w-full text-xs text-white/50 file:mr-4 file:border-0 file:bg-emerald-500/10 file:text-emerald-400 hover:file:bg-emerald-500/20">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-4 mt-4 bg-gradient-to-r from-purple-600 to-cyan-500 hover:scale-[1.02] rounded-xl font-orbitron font-black text-[12px] tracking-[0.4em] transition shadow-[0_0_20px_rgba(168,85,247,0.4)] text-white uppercase">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <main class="w-full max-w-6xl mt-32 mb-20 px-6 flex flex-col gap-6">
+        
+        <div class="glass-card rounded-[3rem] p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div class="relative w-full h-64 rounded-[2rem] bg-black border border-white/10 mb-20">
+                <img id="profileBanner" src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1920&auto=format&fit=crop" class="absolute inset-0 w-full h-full object-cover rounded-[2rem] opacity-70" alt="Banner">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#050510]/90 via-[#050510]/40 to-transparent rounded-[2rem]"></div>
+                
+                <div class="absolute bottom-8 left-64 z-10 flex flex-col justify-end">
+                    <h2 class="font-orbitron text-6xl font-black text-cyan-400 tracking-widest drop-shadow-[0_0_15px_rgba(34,211,238,0.6)] uppercase" id="userNameDisplay">LOADING...</h2>
+                    <p class="text-white/80 font-bold tracking-[0.3em] uppercase text-xs mt-2 flex items-center gap-2">
+                        Verified Competitor <span class="text-white bg-blue-500 rounded-full w-4 h-4 flex items-center justify-center text-[10px]">✓</span>
+                    </p>
+                </div>
+                <div class="absolute -bottom-14 left-12 z-20">
+                    <img id="userPfp" src="" class="w-44 h-44 rounded-full border-[6px] border-[#10101c] object-cover shadow-[0_0_30px_rgba(34,211,238,0.3)]" alt="Profile Picture">
+                </div>
+                
+                <button onclick="openEditModal()" class="absolute top-6 right-6 bg-black/50 hover:bg-white/10 border border-white/20 text-white p-3 rounded-xl transition flex items-center gap-2 font-orbitron text-[9px] uppercase tracking-widest font-bold backdrop-blur-md">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    Edit
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-6">
+                <div class="stat-box rounded-[2rem] p-6 flex flex-col items-center justify-center">
+                    <span class="font-orbitron text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500" id="statWins">-</span>
+                    <span class="text-[10px] tracking-widest uppercase font-bold text-white/60 mt-2">Tournaments Won</span>
+                </div>
+                <div class="stat-box rounded-[2rem] p-6 flex flex-col items-center justify-center">
+                    <span class="font-orbitron text-6xl font-black text-white" id="statMatches">-</span>
+                    <span class="text-[10px] tracking-widest uppercase font-bold text-white/60 mt-2">Matches Played</span>
+                </div>
+                <div class="stat-box rounded-[2rem] p-6 flex flex-col items-center justify-center">
+                    <span class="font-orbitron text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-500 to-purple-600" id="statRep">-</span>
+                    <span class="text-[10px] tracking-widest uppercase font-bold text-white/60 mt-2">Reputation Rating</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 flex flex-col gap-6">
+                <div class="glass-card rounded-[2rem] p-8 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full blur-[80px] -z-10 group-hover:bg-red-500/20 transition"></div>
+                    <div class="flex justify-between items-start mb-6 border-b border-white/10 pb-4">
+                        <div>
+                            <h3 class="font-orbitron text-2xl font-black uppercase text-white">Valorant</h3>
+                            <p id="displayRiotId" class="text-xs text-cyan-300 tracking-widest uppercase mt-1 font-bold">Riot ID: Linked Tracker</p>
+                        </div>
+                        <a href="https://tracker.gg/valorant" target="_blank" class="bg-red-500/10 hover:bg-red-500/30 text-red-400 border border-red-500/30 px-4 py-2 rounded-lg font-orbitron text-[10px] tracking-widest font-bold transition flex items-center gap-2">TRACKER.GG ↗</a>
+                    </div>
+                    <div class="grid grid-cols-3 gap-8 items-center">
+                        <div class="col-span-1 text-center border-r border-white/10 pr-6">
+                            <img src="asc.png" alt="Ascendant Rank" class="w-20 h-20 mx-auto mb-2 drop-shadow-[0_0_15px_rgba(46,204,113,0.5)]">
+                            <p class="font-orbitron font-bold text-lg text-emerald-400">ASCENDANT 3</p>
+                            <p class="text-[10px] text-white/40 uppercase tracking-widest">Current Rank</p>
+                        </div>
+                        <div class="col-span-2 grid grid-cols-2 gap-6">
+                            <div><p class="text-[10px] text-white/50 uppercase tracking-widest mb-1">K/D Ratio</p><p class="font-orbitron text-2xl font-bold">1.24</p><div class="w-full bg-white/10 h-1.5 rounded-full mt-2"><div class="bg-cyan-400 h-1.5 rounded-full progress-bar" style="width: 75%"></div></div></div>
+                            <div><p class="text-[10px] text-white/50 uppercase tracking-widest mb-1">Headshot %</p><p class="font-orbitron text-2xl font-bold">28.5%</p><div class="w-full bg-white/10 h-1.5 rounded-full mt-2"><div class="bg-fuchsia-500 h-1.5 rounded-full progress-bar" style="width: 60%"></div></div></div>
+                            <div><p class="text-[10px] text-white/50 uppercase tracking-widest mb-1">Win Rate</p><p class="font-orbitron text-2xl font-bold">58.2%</p></div>
+                            <div><p class="text-[10px] text-white/50 uppercase tracking-widest mb-1">Top Agent</p><p class="font-orbitron text-lg font-bold text-cyan-300">OMEN</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-[2rem] p-8 flex flex-col h-full">
+                <h3 class="font-orbitron text-lg font-black tracking-widest mb-6 uppercase border-b border-white/10 pb-4 flex items-center justify-between">
+                    Gear Loadout
+                    <span class="text-[8px] text-fuchsia-400 bg-fuchsia-500/10 border border-fuchsia-500/30 px-2 py-1 rounded">MARKET LINKED</span>
+                </h3>
+                
+                <div class="flex flex-col gap-4 flex-1">
+                    <div onclick="window.location.href='marketplace.html?filter=hardware'" class="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-4 hover:border-cyan-400/50 transition group cursor-pointer">
+                        <div class="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center p-1 overflow-hidden"><img src="logitech.jpg" alt="Mouse" class="object-cover w-full h-full rounded mix-blend-screen group-hover:scale-110 transition"></div>
+                        <div class="flex-1"><p class="text-[9px] text-white/40 uppercase tracking-widest">Mouse</p><p class="font-orbitron text-[13px] font-bold text-white">Logitech G502</p><p class="text-[9px] text-cyan-400 mt-1 uppercase font-bold">View Sellers →</p></div>
+                    </div>
+                    <div onclick="window.location.href='marketplace.html?filter=hardware'" class="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-4 hover:border-cyan-400/50 transition group cursor-pointer">
+                        <div class="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center p-1 overflow-hidden"><img src="wooting.jpg" alt="Keyboard" class="object-cover w-full h-full rounded group-hover:scale-110 transition"></div>
+                        <div class="flex-1"><p class="text-[9px] text-white/40 uppercase tracking-widest">Keyboard</p><p class="font-orbitron text-[13px] font-bold text-white">Wooting 60HE</p><p class="text-[9px] text-cyan-400 mt-1 uppercase font-bold">View Sellers →</p></div>
+                    </div>
+                    <div onclick="window.location.href='marketplace.html?filter=hardware'" class="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center gap-4 hover:border-cyan-400/50 transition group cursor-pointer">
+                        <div class="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center p-1 overflow-hidden bg-white"><img src="hyperX.jpg" alt="Headset" class="object-contain w-full h-full group-hover:scale-110 transition"></div>
+                        <div class="flex-1"><p class="text-[9px] text-white/40 uppercase tracking-widest">Audio</p><p class="font-orbitron text-[13px] font-bold text-white">HyperX Cloud</p><p class="text-[9px] text-cyan-400 mt-1 uppercase font-bold">View Sellers →</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+// --- GLOBAL AUTH & DYNAMIC LOAD LOGIC ---
+        async function checkAuthAndLoad() {
+            const token = localStorage.getItem('obsidian_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load profile');
+                const userData = await response.json();
+
+                // Populate Text Stats
+                document.getElementById('userNameDisplay').textContent = userData.username;
+                document.getElementById('dropdownName').textContent = userData.username;
+                document.getElementById('statWins').textContent = userData.tournaments_won;
+                document.getElementById('statMatches').textContent = userData.matches_played;
+                document.getElementById('statRep').textContent = userData.reputation;
+                
+                if (userData.riot_tracker_id) {
+                    document.getElementById('displayRiotId').innerText = `Riot ID: ${userData.riot_tracker_id}`;
+                }
+
+                // Grab all 3 Profile Picture Elements (Nav, Main, and Modal Preview)
+                const navPfp = document.getElementById('navPfp');
+                const userPfp = document.getElementById('userPfp');
+                const modalPfp = document.getElementById('modalPfpPreview'); 
+                
+                // Set the images based on the Database
+                if (userData.profile_pic_url && userData.profile_pic_url !== 'null' && userData.profile_pic_url !== 'default_pfp.jpg') {
+                    if(navPfp) navPfp.src = userData.profile_pic_url;
+                    if(userPfp) userPfp.src = userData.profile_pic_url;
+                    if(modalPfp) modalPfp.src = userData.profile_pic_url; // Updates the modal!
+                } else {
+                    const fallback = `https://ui-avatars.com/api/?name=${userData.username}&background=0a0a19&color=22d3ee`;
+                    if(navPfp) navPfp.src = fallback;
+                    if(userPfp) userPfp.src = fallback;
+                    if(modalPfp) modalPfp.src = fallback; // Updates the modal!
+                }
+                
+                if (userData.banner_url && userData.banner_url !== 'null' && userData.banner_url !== 'default_banner.jpg') {
+                     document.getElementById('profileBanner').src = userData.banner_url;
+                }
+
+            } catch (error) {
+                console.error(error);
+                handleLogout(); 
+            }
+        }
+
+        // ... (Keep your toggleDropdown, window.onclick, and handleLogout functions here) ...
+        
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            document.getElementById('profileMenu').classList.toggle('show');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.matches('#navPfp')) {
+                const menu = document.getElementById('profileMenu');
+                if (menu && menu.classList.contains('show')) menu.classList.remove('show');
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('obsidian_token');
+            window.location.href = 'login.html';
+        }
+
+        function openEditModal() { document.getElementById('editModal').classList.remove('hidden'); }
+        function closeEditModal() { document.getElementById('editModal').classList.add('hidden'); }
+
+        // Local Instant Preview for Images
+        document.getElementById('pfpUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) document.getElementById('modalPfpPreview').src = URL.createObjectURL(file);
+        });
+
+        // Helper function to turn image files into Base64 Text
+        function getBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // --- UPGRADED SAVE PROFILE LOGIC ---
+        async function saveProfile(event) {
+            event.preventDefault();
+            const btn = event.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerText;
+            btn.innerText = "UPLOADING TO DATABASE...";
+            btn.classList.add('animate-pulse');
+            btn.disabled = true;
+
+            const newRiotId = document.getElementById('newRiotId').value;
+            const pfpFile = document.getElementById('pfpUpload').files[0];
+            const bannerFile = document.getElementById('bannerUpload').files[0];
+
+            try {
+                let base64Pfp = null;
+                let base64Banner = null;
+                if (pfpFile) base64Pfp = await getBase64(pfpFile);
+                if (bannerFile) base64Banner = await getBase64(bannerFile);
+
+                const token = localStorage.getItem('obsidian_token');
+                
+                // Send to Backend
+                const response = await fetch('http://localhost:5000/api/profile/update', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        riot_tracker_id: newRiotId || null,
+                        profile_pic_url: base64Pfp,
+                        banner_url: base64Banner
+                    })
+                });
+
+                // STRICT ERROR CHECKING!
+                if (!response.ok) {
+                    throw new Error("Server rejected the save. The image file might be too large for the database.");
+                }
+
+                // If we get here, the database successfully saved it! Update the UI.
+                if (newRiotId) document.getElementById('displayRiotId').innerText = `Riot ID: ${newRiotId}`;
+                if (base64Pfp) {
+                    document.getElementById('userPfp').src = base64Pfp;
+                    document.getElementById('navPfp').src = base64Pfp;
+                    document.getElementById('modalPfpPreview').src = base64Pfp;
+                }
+                if (base64Banner) document.getElementById('profileBanner').src = base64Banner;
+                
+                closeEditModal();
+
+            } catch (error) {
+                console.error("Save failed:", error);
+                alert("Upload Failed: " + error.message + "\n\nTry uploading an image smaller than 1MB.");
+            } finally {
+                btn.innerText = originalText;
+                btn.classList.remove('animate-pulse');
+                btn.disabled = false;
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuthAndLoad(); 
+            const bars = document.querySelectorAll('.progress-bar');
+            bars.forEach(bar => {
+                const targetWidth = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => { bar.style.width = targetWidth; }, 400);
+            });
+        });
+    </script>
+</body>
+</html>

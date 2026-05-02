@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBSIDIAN - Secure Messaging</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; background: #050510; color: #fff; overflow: hidden; }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .synth-bg { background: linear-gradient(to bottom, #050510 0%, #1a0b2e 100%); position: fixed; inset: 0; z-index: -1; }
+        .synth-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(109, 40, 217, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(109, 40, 217, 0.2) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg); transform-origin: center top; animation: gridMove 20s linear infinite; }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 100%; } }
+        .glass-card { background: rgba(10, 10, 25, 0.8); backdrop-filter: blur(25px); border: 1px solid rgba(139, 92, 246, 0.3); }
+        .message-bubble { border-radius: 1.2rem; padding: 1rem; max-width: 70%; margin-bottom: 1rem; position: relative; clear: both; }
+        .sent { background: linear-gradient(135deg, #6d28d9, #4f46e5); float: right; border-bottom-right-radius: 0.2rem; text-align: left; }
+        .received { background: #1e1e35; float: left; border-bottom-left-radius: 0.2rem; border: 1px solid rgba(255,255,255,0.05); }
+        .bot-logo { filter: drop-shadow(0 0 8px #22d3ee) brightness(1.2) hue-rotate(10deg) saturate(1.5); }
+        .contact-item { transition: all 0.3s ease; cursor: pointer; border-radius: 1rem; border: 1px solid transparent; }
+        .contact-item.active { background: rgba(109, 40, 217, 0.2); border-color: rgba(109, 40, 217, 0.4); }
+        .pfp-img { object-fit: cover; border: 2px solid rgba(34, 211, 238, 0.3); }
+        .nav-link { font-size: 10px; font-weight: 900; letter-spacing: 0.4em; cursor: pointer; transition: all 0.3s ease; }
+        .nav-link.active { color: #8b5cf6; text-decoration: underline; text-underline-offset: 8px; text-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
+        
+        .pfp-icon { width: 35px; height: 35px; border-radius: 50%; border: 2px solid rgba(34, 211, 238, 0.5); object-fit: cover; transition: transform 0.3s ease, border-color 0.3s ease; cursor: pointer; }
+        .pfp-icon:hover { transform: scale(1.1); border-color: #fff; }
+        .profile-dropdown { transform-origin: top right; transition: all 0.2s ease; transform: scale(0.95); opacity: 0; pointer-events: none; }
+        .profile-dropdown.show { transform: scale(1); opacity: 1; pointer-events: auto; }
+
+        /* Custom Scrollbar */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.5); border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="synth-bg"><div class="synth-grid"></div></div>
+
+    <nav class="fixed top-0 w-full z-50 p-8 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='index.html'">
+            <img src="Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png" class="w-12 h-12 bot-logo" alt="Logo">
+            <h1 class="font-orbitron text-xl font-black text-cyan-400 tracking-tighter uppercase">Obsidian</h1>
+        </div>
+        
+        <div class="flex items-center gap-8 font-orbitron uppercase text-white/50 tracking-[0.4em]">
+            <a href="index.html" class="nav-link hover:text-white">HOME</a>
+            <a href="tournament.html" class="nav-link hover:text-white">MATCHES</a>
+            <a href="bracket.html" class="nav-link hover:text-white">BRACKETS</a>
+            <a href="marketplace.html" class="nav-link hover:text-white">MARKETPLACE</a>
+            <a href="chats.html" class="nav-link active text-fuchsia-500">CHATS</a>
+            
+            <div class="relative">
+                <img id="navPfp" src="" alt="Profile" class="pfp-icon" onclick="toggleDropdown(event)">
+                <div id="profileMenu" class="profile-dropdown absolute right-0 mt-4 w-48 bg-[rgba(10,10,25,0.95)] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-50">
+                    <div class="px-4 py-3 border-b border-white/5 mb-2">
+                        <p class="text-[10px] tracking-widest text-white/40 uppercase">Signed in as</p>
+                        <p id="dropdownName" class="font-bold text-cyan-400 text-sm truncate">User</p>
+                    </div>
+                    <button onclick="window.location.href='portfolio.html'" class="w-full text-left px-4 py-3 text-[10px] font-bold text-white hover:bg-white/5 rounded-xl transition tracking-widest uppercase flex items-center gap-2">
+                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        Edit Profile
+                    </button>
+                    <button onclick="handleLogout()" class="w-full text-left px-4 py-3 text-[10px] font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition tracking-widest uppercase flex items-center gap-2 mt-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        Log Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="newChatModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
+        <div class="glass-card w-full max-w-md rounded-[2rem] p-8 relative border border-cyan-500/50 shadow-[0_0_50px_rgba(34,211,238,0.2)]">
+            <button onclick="toggleNewChatModal()" class="absolute top-6 right-6 text-white/50 hover:text-white transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="font-orbitron text-xl font-black text-cyan-400 mb-6 uppercase tracking-widest border-b border-white/10 pb-4">Initiate Chat</h3>
+            
+            <div class="relative mb-6">
+                <input type="text" id="userSearch" placeholder="Search database users..." class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-3 text-xs outline-none focus:border-cyan-400 transition" onkeyup="filterUserList()">
+            </div>
+
+            <div id="availableUsersList" class="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scroll">
+                <p class="text-xs text-fuchsia-400 font-orbitron tracking-widest animate-pulse text-center py-4">Syncing with database...</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative min-h-screen flex items-center justify-center p-6 pt-24 z-10">
+        <div class="glass-card w-full max-w-6xl h-[80vh] rounded-[3rem] flex overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            
+            <div class="w-1/3 border-r border-white/5 p-6 flex flex-col gap-4 overflow-y-auto bg-black/30">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="font-orbitron text-xl font-bold tracking-widest text-fuchsia-500">CHATS</h2>
+                    <button onclick="toggleNewChatModal()" class="w-8 h-8 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-black transition flex items-center justify-center shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+                    </button>
+                </div>
+
+                <div class="relative mb-4">
+                    <input type="text" placeholder="Search active chats..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs focus:border-cyan-400 outline-none">
+                </div>
+                <div id="contactList" class="space-y-2 custom-scroll flex-1 overflow-y-auto"></div>
+            </div>
+
+            <div class="flex-1 flex flex-col h-full bg-black/20">
+                <div class="p-6 border-b border-white/5 flex justify-between items-center bg-black/40">
+                    <div class="flex items-center gap-4">
+                        <img id="activePfp" class="w-12 h-12 rounded-full pfp-img" src="" alt="">
+                        <div>
+                            <h3 id="activeName" class="font-orbitron text-sm font-bold tracking-wider">User</h3>
+                            <p class="text-[10px] text-cyan-400 animate-pulse">Online</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="messageArea" class="flex-1 overflow-y-auto p-8 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] custom-scroll">
+                </div>
+
+                <div class="p-6 bg-black/40">
+                    <div class="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-6 py-3">
+                        <button class="text-white/20 hover:text-cyan-400 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg></button>
+                        <input type="text" id="chatInput" placeholder="Type encrypted message..." class="flex-1 bg-transparent border-none outline-none text-xs" onkeypress="handleKeyPress(event)">
+                        <button onclick="sendMessage()" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:scale-105 transition-all text-white font-black font-orbitron text-[10px] px-6 py-2 rounded-lg uppercase tracking-widest">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function checkAuth() {
+            const token = localStorage.getItem('obsidian_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load profile');
+                const userData = await response.json();
+
+                const dropdownName = document.getElementById('dropdownName');
+                if (dropdownName) dropdownName.textContent = userData.username;
+
+                // The Bulletproof Image Logic
+                const navPfp = document.getElementById('navPfp');
+                if (navPfp) {
+                    if (userData.profile_pic_url && userData.profile_pic_url !== 'null' && userData.profile_pic_url !== 'default_pfp.jpg') {
+                        navPfp.src = userData.profile_pic_url;
+                    } else {
+                        navPfp.src = `https://ui-avatars.com/api/?name=${userData.username}&background=0a0a19&color=22d3ee`;
+                    }
+                }
+
+            } catch (error) {
+                console.error(error);
+                localStorage.removeItem('obsidian_token');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function toggleDropdown(event) { event.stopPropagation(); document.getElementById('profileMenu').classList.toggle('show'); }
+        
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('#navPfp')) {
+                const menu = document.getElementById('profileMenu');
+                if (menu && menu.classList.contains('show')) menu.classList.remove('show');
+            }
+        });
+        
+        function handleLogout() { localStorage.removeItem('obsidian_token'); window.location.href = 'login.html'; }
+
+
+        // --- CHAT SYSTEM LOGIC ---
+        let nextChatId = 6; 
+        
+        const chats = [
+            { id: 0, name: "Armughan", pfp: "armughan-pfp.jpg", context: "G502 Hero Mouse", messages: [
+                { type: "received", text: "Yo, I'm down for the trade. The mouse is in mint condition." },
+                { type: "sent", text: "Perfect. Can you send a verification photo?" },
+                { type: "received", html: `<div class='bg-black/60 p-4 rounded-xl border border-cyan-500/30 mt-2'><p class='text-[10px] text-cyan-400 mb-2 uppercase font-bold tracking-widest'>Product Attachment</p><img src='logitech.jpg' class='h-20 mx-auto mb-2 filter brightness-110'><strong>Logitech G502 Hero</strong><p class='text-xs text-white/60 mt-1'>Price: Rs 14,500</p></div>` }
+            ]},
+            { id: 1, name: "Valo Support(ME)", pfp: "https://i.pravatar.cc/150?u=valo", context: "Tournament ID #442", messages: [
+                { type: "sent", text: "Confirming registration for regional qualifiers." },
+                { type: "received", text: "Identity verified. You are now seeded in Bracket B." }
+            ]},
+            { id: 2, name: "drox1", pfp: "https://i.pravatar.cc/150?u=drox", context: "Scrims", messages: [
+                { type: "received", text: "Need a sub for the 10PM session. Any takers?" },
+                { type: "sent", text: "I'm available if the slot is still open." }
+            ]},
+            { id: 3, name: "EWC_Support", pfp: "https://i.pravatar.cc/150?u=ewc", context: "CS2 Riyadh", messages: [
+                { type: "received", text: "Your invitation to Riyadh 2025 has been processed." }
+            ]},
+            { id: 4, name: "ObsidianBot", pfp: "Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png", isBot: true, context: "Market Alerts", messages: [
+                { type: "sent", text: "Show me gaming monitor deals." },
+                { type: "received", text: "BEEP BOOP! Check out this ASUS TUF deal." },
+                { type: "received", html: `<a href='#' class='text-cyan-400 underline font-bold animate-pulse'>VIEW EXCLUSIVE SALE -></a>` }
+            ]},
+            { id: 5, name: "Valo_Smurf_Seller", pfp: "asc.png", context: "Ascendant Account", messages: [
+                { type: "received", html: `<div class='bg-black/60 p-4 rounded-xl border border-fuchsia-500/30 mt-2'><p class='text-[10px] text-fuchsia-400 mb-2 uppercase font-bold tracking-widest'>Product Attachment</p><img src='asc.png' class='h-20 mx-auto mb-2 drop-shadow-[0_0_15px_rgba(46,204,113,0.5)]'><strong>Valo Ascendant Smurf</strong><p class='text-xs text-white/60 mt-1'>Price: $35.00</p></div>` },
+                { type: "sent", text: "Hey, is the Ascendant account still available? Can you provide the tracker.gg link?" }
+            ]}
+        ];
+
+        let activeChatId = 0;
+
+        function renderContacts() {
+            const list = document.getElementById('contactList');
+            const sortedChats = [...chats].sort((a, b) => b.id - a.id);
+            
+            list.innerHTML = sortedChats.map(chat => `
+                <div onclick="openChat(${chat.id})" class="contact-item p-4 flex items-center gap-4 ${chat.id === activeChatId ? 'active' : ''}">
+                    <img src="${chat.pfp}" class="w-10 h-10 rounded-full pfp-img ${chat.isBot ? 'bot-logo' : ''}" onerror="this.src='https://ui-avatars.com/api/?name=${chat.name}&background=0a0a19&color=22d3ee'">
+                    <div class="flex-1">
+                        <h4 class="font-orbitron text-[11px] font-bold tracking-wider text-white">${chat.name}</h4>
+                        <p class="text-[9px] text-white/40 truncate uppercase">${chat.context}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openChat(id) {
+            activeChatId = id;
+            const chat = chats.find(c => c.id === id);
+            
+            renderContacts();
+            
+            document.getElementById('activeName').innerText = chat.name;
+            const activeImageElement = document.getElementById('activePfp');
+            activeImageElement.src = chat.pfp;
+            activeImageElement.onerror = () => { 
+                activeImageElement.src = `https://ui-avatars.com/api/?name=${chat.name}&background=0a0a19&color=22d3ee`; 
+            };
+            if(chat.isBot) document.getElementById('activePfp').classList.add('bot-logo');
+            else document.getElementById('activePfp').classList.remove('bot-logo');
+            
+            const area = document.getElementById('messageArea');
+            area.innerHTML = chat.messages.map(m => `<div class="message-bubble text-xs ${m.type}">${m.text || ''}${m.html || ''}</div>`).join('');
+            area.scrollTop = area.scrollHeight;
+        }
+
+        function toggleNewChatModal() {
+            const modal = document.getElementById('newChatModal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                fetchAvailableUsers();
+            }
+        }
+
+        async function fetchAvailableUsers() {
+            const list = document.getElementById('availableUsersList');
+            list.innerHTML = '<p class="text-xs text-fuchsia-400 font-orbitron tracking-widest animate-pulse text-center py-4">Syncing with database...</p>';
+
+            try {
+                // 1. Grab the token from local storage
+                const token = localStorage.getItem('obsidian_token');
+                
+                // 2. Attach the token to the Headers so Route 7 accepts the request
+                const response = await fetch('http://localhost:5000/api/users', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }); 
+
+                if (!response.ok) throw new Error('API unavailable');
+
+                const users = await response.json();
+
+                // 3. Handle the case where they are the only registered user
+                if (users.length === 0) {
+                    list.innerHTML = '<p class="text-xs text-white/50 font-orbitron text-center py-4 uppercase tracking-widest">No other users found in database.</p>';
+                    return;
+                }
+
+                // 4. Send the real users to the modal
+                populateUserModal(users);
+
+            } catch (error) {
+                console.error("Database connection failed:", error);
+                list.innerHTML = '<p class="text-xs text-red-500 font-orbitron text-center py-4">Connection to Obsidian DB Failed.</p>';
+            }
+        }
+
+        function populateUserModal(users) {
+            const list = document.getElementById('availableUsersList');
+            // We pass BOTH the username and their actual Database ID to the click event
+            list.innerHTML = users.map(user => `
+                <div onclick="initiateNewChat('${user.username}', ${user.id})" class="user-row p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl cursor-pointer flex items-center gap-4 transition group">
+                    <img src="https://ui-avatars.com/api/?name=${user.username}&background=0a0a19&color=22d3ee" class="w-10 h-10 rounded-full border border-cyan-500/30 group-hover:border-cyan-400 transition">
+                    <div class="flex-1">
+                        <p class="font-orbitron text-xs font-bold text-white tracking-widest">${user.username}</p>
+                        <p class="text-[9px] text-emerald-400 uppercase tracking-widest mt-1">Status: Verified</p>
+                    </div>
+                    <span class="text-white/30 group-hover:text-cyan-400 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function initiateNewChat(username, userId) {
+            // Check if we are already chatting with them
+            const existingChat = chats.find(c => c.name.toLowerCase() === username.toLowerCase());
+            if (existingChat) {
+                openChat(existingChat.id);
+                toggleNewChatModal();
+                return;
+            }
+
+            // If not, add them to the local UI list using their actual Database ID
+            chats.push({
+                id: userId,
+                name: username,
+                pfp: `https://ui-avatars.com/api/?name=${username}&background=0a0a19&color=22d3ee`,
+                context: "Direct Message",
+                messages: []
+            });
+            
+            renderContacts();
+            toggleNewChatModal(); 
+            openChat(userId);      
+        }
+
+        function filterUserList() {
+            const search = document.getElementById('userSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('.user-row');
+            rows.forEach(row => {
+                const text = row.querySelector('.font-orbitron').textContent.toLowerCase();
+                row.style.display = text.includes(search) ? 'flex' : 'none';
+            });
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if(!text) return;
+
+            const chat = chats.find(c => c.id === activeChatId);
+            chat.messages.push({ type: "sent", text: text });
+            
+            input.value = '';
+            openChat(activeChatId);
+        }
+
+        function handleKeyPress(e) {
+            if(e.key === 'Enter') sendMessage();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            renderContacts();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const incomingChatId = urlParams.get('chat');
+            if(incomingChatId !== null) {
+                openChat(parseInt(incomingChatId));
+            } else {
+                openChat(0);
+            }
+        });
+    </script>
+</body>
+</html>

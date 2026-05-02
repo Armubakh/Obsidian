@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OBSIDIAN - Live Esports</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Rajdhani', sans-serif; background: #050510; color: #fff; overflow-x: hidden; }
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        .synth-bg { background: linear-gradient(to bottom, #050510 0%, #1a0b2e 100%); position: fixed; inset: 0; z-index: -1; }
+        .synth-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(109, 40, 217, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(109, 40, 217, 0.15) 1px, transparent 1px); background-size: 50px 50px; transform: perspective(500px) rotateX(60deg); transform-origin: center top; animation: gridMove 20s linear infinite; }
+        @keyframes gridMove { from { background-position: 0 0; } to { background-position: 0 100%; } }
+        .glass-card { background: rgba(10, 10, 25, 0.8); backdrop-filter: blur(25px); border: 1px solid rgba(139, 92, 246, 0.3); transition: all 0.3s ease; }
+        .match-card:hover { transform: translateY(-5px); border-color: #22d3ee; box-shadow: 0 10px 30px -10px rgba(34, 211, 238, 0.3); }
+        .brand-logo { width: 45px; filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5)); transition: transform 0.3s ease; }
+        .brand-logo:hover { transform: scale(1.1); }
+        .nav-link { font-size: 10px; font-weight: 900; letter-spacing: 0.4em; cursor: pointer; transition: all 0.3s ease; }
+        .nav-link.active { color: #8b5cf6; text-decoration: underline; text-underline-offset: 8px; text-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
+        
+        /* Avatar Icon Styling */
+        .pfp-icon { width: 35px; height: 35px; border-radius: 50%; border: 2px solid rgba(34, 211, 238, 0.5); object-fit: cover; transition: transform 0.3s ease, border-color 0.3s ease; cursor: pointer; }
+        .pfp-icon:hover { transform: scale(1.1); border-color: #fff; }
+
+        .profile-dropdown { transform-origin: top right; transition: all 0.2s ease; transform: scale(0.95); opacity: 0; pointer-events: none; }
+        .profile-dropdown.show { transform: scale(1); opacity: 1; pointer-events: auto; }
+
+        /* Status Glow Effects */
+        .status-live { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.8); animation: pulse 2s infinite; }
+        .status-upcoming { color: #22d3ee; }
+        .status-completed { color: #6b7280; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+        /* Filter Checkboxes */
+        .filter-checkbox { display: none; }
+        .filter-label { display: flex; align-items: center; gap: 1rem; cursor: pointer; }
+        .filter-box { width: 24px; height: 24px; border-radius: 4px; display: inline-block; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s ease; opacity: 0.5; }
+        .filter-checkbox:checked + .filter-label .filter-box { opacity: 1; border-color: #fff; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        .color-all { background: linear-gradient(135deg, #06b6d4, #10b981); }
+        .color-valo { background: linear-gradient(135deg, #ef4444, #f97316); }
+        .color-cs2 { background: linear-gradient(135deg, #f59e0b, #eab308); }
+        .color-fn { background: linear-gradient(135deg, #a855f7, #3b82f6); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center">
+
+    <div class="synth-bg"><div class="synth-grid"></div></div>
+
+    <nav class="fixed top-0 w-full z-50 p-6 px-12 flex justify-between items-center bg-gradient-to-b from-black/90 to-transparent backdrop-blur-sm">
+        <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='index.html'">
+            <img src="Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png" class="brand-logo" alt="Logo">
+            <div>
+                <h1 class="font-orbitron text-xl font-black text-cyan-400 tracking-tighter uppercase">Obsidian</h1>
+                <p class="text-[8px] text-fuchsia-500 tracking-[0.4em] uppercase font-bold">Gaming Redefined</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-8 font-orbitron uppercase text-white/50 tracking-[0.4em]">
+            <a href="index.html" class="nav-link hover:text-white">HOME</a>
+            <a href="tournament.html" class="nav-link active text-fuchsia-500">MATCHES</a>
+            <a href="bracket.html" class="nav-link hover:text-white">BRACKETS</a>
+            <a href="marketplace.html" class="nav-link hover:text-white">MARKETPLACE</a>
+            <a href="chats.html" class="nav-link hover:text-white">CHATS</a>
+            
+            <!-- FIXED DROPDOWN HTML (w-64 applied) -->
+            <div class="relative">
+                <img id="navPfp" src="" alt="Profile" class="pfp-icon cursor-pointer" onclick="toggleDropdown(event)" onerror="this.src='https://i.pravatar.cc/300?u=obsidian'">
+                <div id="profileMenu" class="profile-dropdown absolute right-0 mt-4 w-64 bg-[rgba(10,10,25,0.95)] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-50">
+                    <div class="px-4 py-3 border-b border-white/5 mb-2">
+                        <p class="text-[10px] tracking-widest text-white/40 uppercase">Signed in as</p>
+                        <p id="dropdownName" class="font-bold text-cyan-400 text-sm truncate">User</p>
+                    </div>
+                    <button onclick="window.location.href='portfolio.html'" class="w-full text-left px-4 py-3 text-[10px] font-bold text-white hover:bg-white/5 rounded-xl transition tracking-widest uppercase flex items-center gap-2">
+                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        Edit Profile
+                    </button>
+                    <button onclick="handleLogout()" class="w-full text-left px-4 py-3 text-[10px] font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition tracking-widest uppercase flex items-center gap-2 mt-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        Log Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="w-full max-w-7xl mt-32 mb-20 px-6 flex flex-col lg:flex-row gap-8">
+        
+        <aside class="w-full lg:w-1/4 glass-card rounded-[2rem] p-8 h-fit sticky top-32">
+            <h3 class="font-orbitron text-lg font-black tracking-widest mb-6 uppercase text-white border-b border-white/10 pb-4">Game Filters</h3>
+            
+            <div class="flex flex-col gap-6 mb-6" id="filterContainer">
+                <div>
+                    <input type="checkbox" id="filter-all" class="filter-checkbox" value="all" checked>
+                    <label for="filter-all" class="filter-label group">
+                        <span class="filter-box color-all"></span>
+                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">All Matches</span>
+                    </label>
+                </div>
+                <div>
+                    <input type="checkbox" id="filter-valo" class="filter-checkbox" value="valorant">
+                    <label for="filter-valo" class="filter-label group">
+                        <span class="filter-box color-valo"></span>
+                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Valorant</span>
+                    </label>
+                </div>
+                <div>
+                    <input type="checkbox" id="filter-cs2" class="filter-checkbox" value="cs2">
+                    <label for="filter-cs2" class="filter-label group">
+                        <span class="filter-box color-cs2"></span>
+                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Counter-Strike 2</span>
+                    </label>
+                </div>
+                <div>
+                    <input type="checkbox" id="filter-fn" class="filter-checkbox" value="fortnite">
+                    <label for="filter-fn" class="filter-label group">
+                        <span class="filter-box color-fn"></span>
+                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Fortnite</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-white/5 border border-white/10 rounded-xl p-4 text-center">
+                <p class="text-[9px] text-white/40 uppercase tracking-widest font-bold">API Status</p>
+                <div class="flex items-center justify-center gap-2 mt-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span class="text-xs font-orbitron text-emerald-400 font-bold">Live Syncing</span>
+                </div>
+            </div>
+        </aside>
+
+        <section class="w-full lg:w-3/4 flex flex-col">
+            <div class="flex justify-between items-end mb-8 px-2">
+                <div>
+                    <h2 class="font-orbitron text-4xl font-black text-white uppercase tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Live <span class="text-cyan-400">Tracker</span></h2>
+                    <p class="text-xs text-white/50 tracking-widest uppercase mt-2 font-bold">Powered by Esports APIs</p>
+                </div>
+            </div>
+
+            <div id="matchesContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6 relative min-h-[300px]">
+                
+                <div id="loader" class="absolute inset-0 flex flex-col items-center justify-center bg-black/40 rounded-[2rem] border border-white/5 z-10 backdrop-blur-sm">
+                    <svg class="animate-spin h-10 w-10 text-cyan-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <p class="font-orbitron text-xs tracking-widest text-fuchsia-400 uppercase animate-pulse">Syncing with Obsidian Backend...</p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+ <script>
+        async function checkAuth() {
+    const token = localStorage.getItem('obsidian_token');
+    if (!token) {
+        window.location.href = 'login.html';
+        return;
+    }
+    
+    try {
+        const response = await fetch('http://localhost:5000/api/profile', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!response.ok) throw new Error('Failed to load profile');
+        const userData = await response.json();
+
+        const dropdownName = document.getElementById('dropdownName');
+        if (dropdownName) dropdownName.textContent = userData.username;
+
+        const navPfp = document.getElementById('navPfp');
+        if (navPfp) {
+            if (userData.profile_pic_url && userData.profile_pic_url !== 'null' && userData.profile_pic_url !== 'default_pfp.jpg') {
+                navPfp.src = userData.profile_pic_url;
+            } else {
+                navPfp.src = `https://ui-avatars.com/api/?name=${userData.username}&background=0a0a19&color=22d3ee`;
+            }
+        }
+
+    } catch (error) {
+        console.error(error);
+        localStorage.removeItem('obsidian_token');
+        window.location.href = 'login.html';
+    }
+}
+        function toggleDropdown(event) { 
+            event.stopPropagation(); 
+            document.getElementById('profileMenu').classList.toggle('show'); 
+        }
+        
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('#navPfp')) {
+                const menu = document.getElementById('profileMenu');
+                if (menu && menu.classList.contains('show')) menu.classList.remove('show');
+            }
+        });
+        
+        function handleLogout() { 
+            localStorage.removeItem('obsidian_token'); 
+            window.location.href = 'login.html'; 
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Trigger auth check on load
+            checkAuth();
+
+            const container = document.getElementById('matchesContainer');
+            const loader = document.getElementById('loader');
+            const checkboxes = document.querySelectorAll('.filter-checkbox');
+
+            // --- Filter Interaction Logic ---
+            function handleFilterChange(e) {
+                const changedBox = e.target;
+                
+                if (changedBox.value === 'all' && changedBox.checked) {
+                    checkboxes.forEach(cb => { if (cb.value !== 'all') cb.checked = false; });
+                } else if (changedBox.value !== 'all' && changedBox.checked) {
+                    document.getElementById('filter-all').checked = false;
+                }
+
+                const anyChecked = Array.from(checkboxes).some(cb => cb.checked);
+                if (!anyChecked) document.getElementById('filter-all').checked = true;
+
+                fetchMatches();
+            }
+
+            checkboxes.forEach(cb => cb.addEventListener('change', handleFilterChange));
+
+            // --- API Fetching Logic ---
+            function fetchMatches() {
+                loader.style.display = 'flex';
+                container.innerHTML = '';
+                container.appendChild(loader);
+
+                const isAllChecked = document.getElementById('filter-all').checked;
+                const activeCategories = Array.from(checkboxes)
+                                              .filter(cb => cb.checked && cb.value !== 'all')
+                                              .map(cb => cb.value);
+
+                let url = new URL('http://localhost:5000/api/matches');
+                
+                if (!isAllChecked && activeCategories.length > 0) {
+                    url.searchParams.append('game', activeCategories[0]);
+                }
+
+                fetch(url.toString())
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(matches => {
+                        loader.style.display = 'none';
+
+                        if (!matches || matches.length === 0) {
+                            container.innerHTML = `
+                                <div class="col-span-full flex flex-col items-center justify-center py-20 text-white/40">
+                                    <svg class="w-12 h-12 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <p class="font-orbitron tracking-widest text-sm uppercase text-center">No active matches found.</p>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        matches.forEach(match => {
+                            let statusClass = "status-upcoming";
+                            let statusText = "UPCOMING";
+                            if (match.status === 'running') { statusClass = "status-live"; statusText = "LIVE"; }
+                            if (match.status === 'finished') { statusClass = "status-completed"; statusText = "COMPLETED"; }
+
+                            const team1Name = match.opponents && match.opponents[0] ? match.opponents[0].opponent.name : "TBD";
+                            const team2Name = match.opponents && match.opponents[1] ? match.opponents[1].opponent.name : "TBD";
+                            
+                            let score1 = 0;
+                            let score2 = 0;
+                            
+                            if (match.results && match.results.length >= 2) {
+                                const team1Id = match.opponents[0]?.opponent.id;
+                                const team2Id = match.opponents[1]?.opponent.id;
+                                
+                                const result1 = match.results.find(r => r.team_id === team1Id);
+                                const result2 = match.results.find(r => r.team_id === team2Id);
+                                
+                                if (result1) score1 = result1.score;
+                                if (result2) score2 = result2.score;
+                            }
+
+                            let middleBoxHTML = `<span class="font-orbitron font-black text-lg text-white/20">VS</span>`;
+                            
+                            if (match.status === 'running' || match.status === 'finished') {
+                                middleBoxHTML = `
+                                    <span class="font-orbitron font-black text-xl text-cyan-400">${score1}</span>
+                                    <span class="font-orbitron font-black text-lg text-white/20 mx-2">-</span>
+                                    <span class="font-orbitron font-black text-xl text-fuchsia-500">${score2}</span>
+                                `;
+                            }
+
+                            const startTime = new Date(match.begin_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            const leagueName = match.league ? match.league.name : "Esports";
+                            const matchName = match.name || "TBA";
+
+                            const cardHTML = `
+                                <div class="glass-card match-card rounded-[2rem] p-6 relative overflow-hidden group cursor-pointer">
+                                    <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
+                                        <span class="text-[10px] uppercase tracking-[0.2em] font-black ${statusClass}">• ${statusText}</span>
+                                        <span class="text-[10px] text-white/40 tracking-widest uppercase font-bold bg-white/5 px-2 py-1 rounded">${startTime}</span>
+                                    </div>
+
+                                    <div class="text-center mb-6">
+                                        <h3 class="font-orbitron text-sm font-bold text-white/80 uppercase truncate tracking-widest">${leagueName}</h3>
+                                        <p class="text-[9px] text-fuchsia-400 tracking-[0.3em] uppercase mt-1">${matchName}</p>
+                                    </div>
+
+                                    <div class="flex justify-between items-center px-2">
+                                        <div class="text-center w-4/12 overflow-hidden">
+                                            <h4 class="font-orbitron font-black text-base text-white truncate">${team1Name}</h4>
+                                        </div>
+                                        
+                                        <div class="w-4/12 flex justify-center">
+                                            <div class="bg-black/50 border border-white/10 rounded-xl py-2 px-4 flex items-center justify-center whitespace-nowrap shadow-[0_0_15px_rgba(0,0,0,0.5)]">
+                                                ${middleBoxHTML}
+                                            </div>
+                                        </div>
+
+                                        <div class="text-center w-4/12 overflow-hidden">
+                                            <h4 class="font-orbitron font-black text-base text-white truncate">${team2Name}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            container.innerHTML += cardHTML;
+                        });
+                    })
+                    .catch(error => {
+                        loader.style.display = 'none';
+                        container.innerHTML = `
+                            <div class="col-span-full text-red-500 font-orbitron tracking-widest text-sm uppercase bg-red-500/10 border border-red-500/30 p-6 rounded-2xl">
+                                <p class="font-black text-lg mb-2">Connection Error</p>
+                                <p class="text-xs opacity-80">Check server console. Ensure .env has PANDASCORE_KEY.</p>
+                            </div>
+                        `;
+                    });
+            }
+
+            fetchMatches();
+        });
+    </script>
+</body>
+</html>
