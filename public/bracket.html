@@ -54,7 +54,6 @@
             <a href="marketplace.html" class="nav-link hover:text-white">MARKETPLACE</a>
             <a href="chats.html" class="nav-link hover:text-white">CHATS</a>
             
-            <!-- FIXED DROPDOWN HTML (w-64 applied) -->
             <div class="relative">
                 <img id="navPfp" src="" alt="Profile" class="pfp-icon cursor-pointer" onclick="toggleDropdown(event)" onerror="this.src='https://i.pravatar.cc/300?u=obsidian'">
                 <div id="profileMenu" class="profile-dropdown absolute right-0 mt-4 w-64 bg-[rgba(10,10,25,0.95)] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-50">
@@ -178,7 +177,6 @@
             document.getElementById('regFormArea').classList.add('hidden');
             const successArea = document.getElementById('regSuccessArea');
             successArea.classList.remove('hidden');
-            console.log(`[API REQUEST] POST /api/register -> Payload: { userId: 1, tournamentId: 1, ign: "${ign}", discord: "${discord}" }`);
         }
         
         async function generateBracket() {
@@ -194,7 +192,7 @@
             container.innerHTML = '<p class="text-cyan-400 font-orbitron text-xs animate-pulse text-center w-full">BUILDING BRACKET ARCHITECTURE...</p>';
 
             try {
-                const response = await fetch('http://localhost:5000/api/bracket/create', {
+                const response = await fetch('https://obsidian-2-ma5s.onrender.com/api/bracket/create', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
@@ -228,39 +226,39 @@
         }
         
         async function checkAuth() {
-    const token = localStorage.getItem('obsidian_token');
-    if (!token) {
-        window.location.href = 'login.html';
-        return;
-    }
-    
-    try {
-        const response = await fetch('http://localhost:5000/api/profile', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (!response.ok) throw new Error('Failed to load profile');
-        const userData = await response.json();
+            const token = localStorage.getItem('obsidian_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            try {
+                const response = await fetch('https://obsidian-2-ma5s.onrender.com/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load profile');
+                const userData = await response.json();
 
-        const dropdownName = document.getElementById('dropdownName');
-        if (dropdownName) dropdownName.textContent = userData.username;
+                const dropdownName = document.getElementById('dropdownName');
+                if (dropdownName) dropdownName.textContent = userData.username;
 
-        const navPfp = document.getElementById('navPfp');
-        if (navPfp) {
-            if (userData.profile_pic_url && userData.profile_pic_url !== 'null' && userData.profile_pic_url !== 'default_pfp.jpg') {
-                navPfp.src = userData.profile_pic_url;
-            } else {
-                navPfp.src = `https://ui-avatars.com/api/?name=${userData.username}&background=0a0a19&color=22d3ee`;
+                const navPfp = document.getElementById('navPfp');
+                if (navPfp) {
+                    if (userData.profile_pic_url && userData.profile_pic_url !== 'null' && userData.profile_pic_url !== 'default_pfp.jpg') {
+                        navPfp.src = userData.profile_pic_url;
+                    } else {
+                        navPfp.src = `https://ui-avatars.com/api/?name=${userData.username}&background=0a0a19&color=22d3ee`;
+                    }
+                }
+
+            } catch (error) {
+                console.error(error);
+                localStorage.removeItem('obsidian_token');
+                window.location.href = 'login.html';
             }
         }
-
-    } catch (error) {
-        console.error(error);
-        localStorage.removeItem('obsidian_token');
-        window.location.href = 'login.html';
-    }
-}
-        // --- FIXED DROPDOWN & LOGOUT LOGIC ---
+        
         function toggleDropdown(event) { 
             event.stopPropagation(); 
             document.getElementById('profileMenu').classList.toggle('show'); 
@@ -278,7 +276,6 @@
             window.location.href = 'login.html'; 
         }
 
-        // Trigger auth check on load
         window.addEventListener('DOMContentLoaded', checkAuth);
     </script>
 </body>

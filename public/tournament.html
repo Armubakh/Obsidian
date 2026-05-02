@@ -19,20 +19,17 @@
         .nav-link { font-size: 10px; font-weight: 900; letter-spacing: 0.4em; cursor: pointer; transition: all 0.3s ease; }
         .nav-link.active { color: #8b5cf6; text-decoration: underline; text-underline-offset: 8px; text-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
         
-        /* Avatar Icon Styling */
         .pfp-icon { width: 35px; height: 35px; border-radius: 50%; border: 2px solid rgba(34, 211, 238, 0.5); object-fit: cover; transition: transform 0.3s ease, border-color 0.3s ease; cursor: pointer; }
         .pfp-icon:hover { transform: scale(1.1); border-color: #fff; }
 
         .profile-dropdown { transform-origin: top right; transition: all 0.2s ease; transform: scale(0.95); opacity: 0; pointer-events: none; }
         .profile-dropdown.show { transform: scale(1); opacity: 1; pointer-events: auto; }
 
-        /* Status Glow Effects */
         .status-live { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.8); animation: pulse 2s infinite; }
         .status-upcoming { color: #22d3ee; }
         .status-completed { color: #6b7280; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* Filter Checkboxes */
         .filter-checkbox { display: none; }
         .filter-label { display: flex; align-items: center; gap: 1rem; cursor: pointer; }
         .filter-box { width: 24px; height: 24px; border-radius: 4px; display: inline-block; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s ease; opacity: 0.5; }
@@ -63,7 +60,6 @@
             <a href="marketplace.html" class="nav-link hover:text-white">MARKETPLACE</a>
             <a href="chats.html" class="nav-link hover:text-white">CHATS</a>
             
-            <!-- FIXED DROPDOWN HTML (w-64 applied) -->
             <div class="relative">
                 <img id="navPfp" src="" alt="Profile" class="pfp-icon cursor-pointer" onclick="toggleDropdown(event)" onerror="this.src='https://i.pravatar.cc/300?u=obsidian'">
                 <div id="profileMenu" class="profile-dropdown absolute right-0 mt-4 w-64 bg-[rgba(10,10,25,0.95)] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-50">
@@ -158,7 +154,7 @@
     }
     
     try {
-        const response = await fetch('http://localhost:5000/api/profile', {
+        const response = await fetch('https://obsidian-2-ma5s.onrender.com/api/profile', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
@@ -201,14 +197,12 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Trigger auth check on load
             checkAuth();
 
             const container = document.getElementById('matchesContainer');
             const loader = document.getElementById('loader');
             const checkboxes = document.querySelectorAll('.filter-checkbox');
 
-            // --- Filter Interaction Logic ---
             function handleFilterChange(e) {
                 const changedBox = e.target;
                 
@@ -226,7 +220,6 @@
 
             checkboxes.forEach(cb => cb.addEventListener('change', handleFilterChange));
 
-            // --- API Fetching Logic ---
             function fetchMatches() {
                 loader.style.display = 'flex';
                 container.innerHTML = '';
@@ -237,7 +230,7 @@
                                               .filter(cb => cb.checked && cb.value !== 'all')
                                               .map(cb => cb.value);
 
-                let url = new URL('http://localhost:5000/api/matches');
+                let url = new URL('https://obsidian-2-ma5s.onrender.com/api/matches');
                 
                 if (!isAllChecked && activeCategories.length > 0) {
                     url.searchParams.append('game', activeCategories[0]);

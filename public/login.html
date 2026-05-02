@@ -122,7 +122,8 @@
             const password = document.getElementById('pass').value;
             const email = document.getElementById('email').value;
 
-            const endpoint = isLogin ? 'http://localhost:5000/api/login' : 'http://localhost:5000/api/register';
+            // POINTED TO RENDER SERVER
+            const endpoint = isLogin ? 'https://obsidian-2-ma5s.onrender.com/api/login' : 'https://obsidian-2-ma5s.onrender.com/api/register';
             const payload = { username, password };
             if (!isLogin) payload.email = email;
 

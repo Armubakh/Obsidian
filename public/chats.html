@@ -28,7 +28,6 @@
         .profile-dropdown { transform-origin: top right; transition: all 0.2s ease; transform: scale(0.95); opacity: 0; pointer-events: none; }
         .profile-dropdown.show { transform: scale(1); opacity: 1; pointer-events: auto; }
 
-        /* Custom Scrollbar */
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
         .custom-scroll::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.5); border-radius: 4px; }
@@ -139,7 +138,7 @@
             }
             
             try {
-                const response = await fetch('http://localhost:5000/api/profile', {
+                const response = await fetch('https://obsidian-2-ma5s.onrender.com/api/profile', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 
@@ -149,7 +148,6 @@
                 const dropdownName = document.getElementById('dropdownName');
                 if (dropdownName) dropdownName.textContent = userData.username;
 
-                // The Bulletproof Image Logic
                 const navPfp = document.getElementById('navPfp');
                 if (navPfp) {
                     if (userData.profile_pic_url && userData.profile_pic_url !== 'null' && userData.profile_pic_url !== 'default_pfp.jpg') {
@@ -177,8 +175,6 @@
         
         function handleLogout() { localStorage.removeItem('obsidian_token'); window.location.href = 'login.html'; }
 
-
-        // --- CHAT SYSTEM LOGIC ---
         let nextChatId = 6; 
         
         const chats = [
@@ -259,11 +255,9 @@
             list.innerHTML = '<p class="text-xs text-fuchsia-400 font-orbitron tracking-widest animate-pulse text-center py-4">Syncing with database...</p>';
 
             try {
-                // 1. Grab the token from local storage
                 const token = localStorage.getItem('obsidian_token');
                 
-                // 2. Attach the token to the Headers so Route 7 accepts the request
-                const response = await fetch('http://localhost:5000/api/users', {
+                const response = await fetch('https://obsidian-2-ma5s.onrender.com/api/users', {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -275,13 +269,11 @@
 
                 const users = await response.json();
 
-                // 3. Handle the case where they are the only registered user
                 if (users.length === 0) {
                     list.innerHTML = '<p class="text-xs text-white/50 font-orbitron text-center py-4 uppercase tracking-widest">No other users found in database.</p>';
                     return;
                 }
 
-                // 4. Send the real users to the modal
                 populateUserModal(users);
 
             } catch (error) {
@@ -292,7 +284,6 @@
 
         function populateUserModal(users) {
             const list = document.getElementById('availableUsersList');
-            // We pass BOTH the username and their actual Database ID to the click event
             list.innerHTML = users.map(user => `
                 <div onclick="initiateNewChat('${user.username}', ${user.id})" class="user-row p-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl cursor-pointer flex items-center gap-4 transition group">
                     <img src="https://ui-avatars.com/api/?name=${user.username}&background=0a0a19&color=22d3ee" class="w-10 h-10 rounded-full border border-cyan-500/30 group-hover:border-cyan-400 transition">
@@ -308,7 +299,6 @@
         }
 
         function initiateNewChat(username, userId) {
-            // Check if we are already chatting with them
             const existingChat = chats.find(c => c.name.toLowerCase() === username.toLowerCase());
             if (existingChat) {
                 openChat(existingChat.id);
@@ -316,7 +306,6 @@
                 return;
             }
 
-            // If not, add them to the local UI list using their actual Database ID
             chats.push({
                 id: userId,
                 name: username,

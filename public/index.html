@@ -157,45 +157,40 @@
     </section>
 
     <script>
-       // --- GLOBAL AUTH & DYNAMIC LOAD LOGIC ---
-async function checkAuth() {
-    const token = localStorage.getItem('obsidian_token');
-    if (!token) {
-        window.location.href = 'login.html';
-        return;
-    }
-    
-    try {
-        // Fetch the specific user's data from your MySQL database
-        const response = await fetch('http://localhost:5000/api/profile', {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        
-        if (!response.ok) throw new Error('Failed to load profile');
-        const userData = await response.json();
+        async function checkAuth() {
+            const token = localStorage.getItem('obsidian_token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            try {
+                const response = await fetch('https://obsidian-2-ma5s.onrender.com/api/profile', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('Failed to load profile');
+                const userData = await response.json();
 
-        // Populate the Navigation Bar with real data
-        const dropdownName = document.getElementById('dropdownName');
-        if (dropdownName) dropdownName.textContent = userData.username;
+                const dropdownName = document.getElementById('dropdownName');
+                if (dropdownName) dropdownName.textContent = userData.username;
 
-    // Upgraded Profile Image Logic
-        const navPfp = document.getElementById('navPfp');
-        if (navPfp) {
-            // Check if it exists, is NOT null, and is NOT the old default
-            if (userData.profile_pic_url && userData.profile_pic_url !== 'null' && userData.profile_pic_url !== 'default_pfp.jpg') {
-                navPfp.src = userData.profile_pic_url;
-            } else {
-                // If they don't have a custom image, generate their beautiful UI Avatar
-                navPfp.src = `https://ui-avatars.com/api/?name=${userData.username}&background=0a0a19&color=22d3ee`;
+                const navPfp = document.getElementById('navPfp');
+                if (navPfp) {
+                    if (userData.profile_pic_url && userData.profile_pic_url !== 'null' && userData.profile_pic_url !== 'default_pfp.jpg') {
+                        navPfp.src = userData.profile_pic_url;
+                    } else {
+                        navPfp.src = `https://ui-avatars.com/api/?name=${userData.username}&background=0a0a19&color=22d3ee`;
+                    }
+                }
+
+            } catch (error) {
+                console.error(error);
+                localStorage.removeItem('obsidian_token');
+                window.location.href = 'login.html';
             }
         }
-
-    } catch (error) {
-        console.error(error);
-        localStorage.removeItem('obsidian_token');
-        window.location.href = 'login.html';
-    }
-}
+        
         function toggleDropdown(event) {
             event.stopPropagation();
             document.getElementById('profileMenu').classList.toggle('show');
@@ -211,7 +206,6 @@ async function checkAuth() {
             window.location.href = 'login.html';
         }
 
-        // DOM Scripts
         window.addEventListener('DOMContentLoaded', checkAuth);
 
         function setGame(index) {
