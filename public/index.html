@@ -19,13 +19,16 @@
         .glass-card { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .ambient-bg { filter: brightness(0.25) blur(1px); animation: kenBurns 40s infinite alternate linear; position: fixed; inset: 0; z-index: -1;}
         @keyframes kenBurns { from { transform: scale(1); } to { transform: scale(1.1); } }
+        
         .game-tab { font-size: 14px; font-weight: 900; letter-spacing: 0.2em; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
         .game-tab.active { color: #22d3ee; text-decoration: underline; text-underline-offset: 10px; }
-        .nav-link { font-size: 10px; font-weight: 900; letter-spacing: 0.2em; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
-        @media (min-width: 1024px) { .nav-link { letter-spacing: 0.4em; } }
-        .nav-link.active { color: #8b5cf6; text-decoration: underline; text-underline-offset: 8px; text-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
-        .confirmation-text { text-shadow: 0 0 20px rgba(34, 211, 238, 0.8); }
         
+        /* Adjusted letter spacing to prevent huge width overlaps on laptops */
+        .nav-link { font-size: 10px; font-weight: 900; letter-spacing: 0.2em; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
+        @media (min-width: 1280px) { .nav-link { letter-spacing: 0.3em; } }
+        .nav-link.active { color: #8b5cf6; text-decoration: underline; text-underline-offset: 8px; text-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
+        
+        .confirmation-text { text-shadow: 0 0 20px rgba(34, 211, 238, 0.8); }
         .pfp-icon { width: 35px; height: 35px; border-radius: 50%; border: 2px solid rgba(34, 211, 238, 0.5); object-fit: cover; transition: transform 0.3s ease, border-color 0.3s ease; cursor: pointer; }
         .pfp-icon:hover { transform: scale(1.1); border-color: #fff; }
         .profile-dropdown { transform-origin: top right; transition: all 0.2s ease; transform: scale(0.95); opacity: 0; pointer-events: none; }
@@ -36,49 +39,51 @@
 </head>
 <body>
 
-    <!-- RESPONSIVE NAVBAR: Fixed alignment issue -->
-    <nav class="fixed top-0 w-full z-50 p-4 lg:p-8 flex flex-wrap items-center justify-between lg:justify-start gap-y-4 bg-gradient-to-b from-black/95 to-black/80 lg:to-transparent backdrop-blur-md">
-        
-        <!-- LOGO (Left) -->
-        <div class="flex items-center gap-4 lg:gap-6 cursor-pointer order-1" onclick="window.location.href='index.html'">
-            <img src="Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png" class="brand-logo w-10 h-10 lg:w-[50px] lg:h-[50px]" alt="Logo">
-            <h1 class="font-orbitron text-lg lg:text-2xl font-black text-cyan-400 tracking-tighter uppercase">Obsidian</h1>
+    <!-- COMPLETELY REWRITTEN NAVBAR: Pure Flexbox, 0 Overlaps -->
+    <nav class="fixed top-0 w-full z-50 p-4 lg:p-6 lg:px-8 flex flex-wrap items-center justify-between gap-y-4 gap-x-4 bg-gradient-to-b from-black/95 to-black/80 lg:to-transparent backdrop-blur-md">
+
+        <!-- LOGO (Order 1) -->
+        <div class="flex items-center gap-3 lg:gap-4 cursor-pointer order-1 flex-shrink-0" onclick="window.location.href='index.html'">
+            <img src="Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png" class="brand-logo w-10 lg:w-[45px]" alt="Logo">
+            <h1 class="font-orbitron text-lg lg:text-xl font-black text-cyan-400 tracking-tighter uppercase hidden sm:block">Obsidian</h1>
         </div>
 
-        <!-- MAIN LINKS (Right on Desktop, Bottom Row on Mobile) -->
-        <div class="flex items-center gap-6 lg:gap-8 font-orbitron uppercase text-white/50 overflow-x-auto hide-scrollbar w-full lg:w-auto order-3 lg:order-2 lg:ml-auto pb-2 lg:pb-0">
+        <!-- GAME TABS (Order 4 on Mobile, Order 2 on Desktop) -->
+        <!-- flex-1 dynamically fills the space between Logo and Links safely -->
+        <div class="w-full lg:w-auto flex justify-center gap-6 lg:gap-10 font-orbitron order-4 lg:order-2 lg:flex-1">
+            <span onclick="setGame(0)" class="game-tab active text-[11px] lg:text-[13px]" id="tab0">VALORANT</span>
+            <span onclick="setGame(1)" class="game-tab text-white/40 hover:text-white text-[11px] lg:text-[13px]" id="tab1">CS2</span>
+            <span onclick="setGame(2)" class="game-tab text-white/40 hover:text-white text-[11px] lg:text-[13px]" id="tab2">FORTNITE</span>
+        </div>
+
+        <!-- MAIN LINKS & PFP (Order 3) -->
+        <div class="flex items-center justify-start lg:justify-end gap-5 lg:gap-6 font-orbitron uppercase text-white/50 overflow-x-auto hide-scrollbar w-full lg:w-auto order-3 lg:order-3 flex-shrink-0 pb-2 lg:pb-0">
             <a href="index.html" class="nav-link active text-cyan-400">HOME</a>
             <a href="tournament.html" class="nav-link hover:text-white">MATCHES</a>
             <a href="bracket.html" class="nav-link hover:text-white">BRACKETS</a>
             <a href="marketplace.html" class="nav-link hover:text-white">MARKETPLACE</a>
             <a href="chats.html" class="nav-link hover:text-white">CHATS</a>
-        </div>
 
-        <!-- PFP (Far Right on Desktop, Top Right on Mobile) -->
-        <div class="relative order-2 lg:order-3 lg:ml-8">
-            <img id="navPfp" src="" alt="Profile" class="pfp-icon" onclick="toggleDropdown(event)">
-            <div id="profileMenu" class="profile-dropdown absolute right-0 top-full mt-4 w-48 bg-[rgba(10,10,25,0.95)] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-50">
-                <div class="px-4 py-3 border-b border-white/5 mb-2">
-                    <p class="text-[10px] tracking-widest text-white/40 uppercase">Signed in as</p>
-                    <p id="dropdownName" class="font-bold text-cyan-400 text-sm truncate">User</p>
+            <!-- PFP locked to the far right inside the links container -->
+            <div class="relative ml-2 lg:ml-4 border-l border-white/20 pl-4 lg:pl-6 shrink-0">
+                <img id="navPfp" src="" alt="Profile" class="pfp-icon" onclick="toggleDropdown(event)">
+                <div id="profileMenu" class="profile-dropdown absolute right-0 top-full mt-4 w-48 bg-[rgba(10,10,25,0.95)] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-50">
+                    <div class="px-4 py-3 border-b border-white/5 mb-2">
+                        <p class="text-[10px] tracking-widest text-white/40 uppercase">Signed in as</p>
+                        <p id="dropdownName" class="font-bold text-cyan-400 text-sm truncate">User</p>
+                    </div>
+                    <button onclick="window.location.href='portfolio.html'" class="w-full text-left px-4 py-3 text-[10px] font-bold text-white hover:bg-white/5 rounded-xl transition tracking-widest uppercase flex items-center gap-2">
+                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                        Edit Profile
+                    </button>
+                    <button onclick="handleLogout()" class="w-full text-left px-4 py-3 text-[10px] font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition tracking-widest uppercase flex items-center gap-2 mt-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        Log Out
+                    </button>
                 </div>
-                <button onclick="window.location.href='portfolio.html'" class="w-full text-left px-4 py-3 text-[10px] font-bold text-white hover:bg-white/5 rounded-xl transition tracking-widest uppercase flex items-center gap-2">
-                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                    Edit Profile
-                </button>
-                <button onclick="handleLogout()" class="w-full text-left px-4 py-3 text-[10px] font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition tracking-widest uppercase flex items-center gap-2 mt-1">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                    Log Out
-                </button>
             </div>
         </div>
 
-        <!-- GAME TABS (Center on Desktop, Below Links on Mobile) -->
-        <div class="w-full lg:absolute lg:left-1/2 lg:-translate-x-1/2 flex justify-center gap-6 lg:gap-12 font-orbitron order-4 lg:order-none pb-2 lg:pb-0 mt-2 lg:mt-0">
-            <span onclick="setGame(0)" class="game-tab active text-[11px] lg:text-[14px]" id="tab0">VALORANT</span>
-            <span onclick="setGame(1)" class="game-tab text-white/40 hover:text-white text-[11px] lg:text-[14px]" id="tab1">CS2</span>
-            <span onclick="setGame(2)" class="game-tab text-white/40 hover:text-white text-[11px] lg:text-[14px]" id="tab2">FORTNITE</span>
-        </div>
     </nav>
 
     <div class="hidden lg:block fixed bottom-8 left-8 z-50 group">
@@ -92,10 +97,10 @@
         </div>
     </div>
 
-    <!-- RESPONSIVE LAYOUTS: flex-col on mobile, flex-row on desktop -->
+    <!-- MAIN SECTIONS -->
     <section class="game-stage active" id="stage0">
         <div class="ambient-bg bg-cover bg-center" style="background-image: url('6ddbb48ae4e05920a8ef1afcb81a725d61d5182f-1920x1080.jpg');"></div>
-        <div class="relative min-h-full flex flex-col lg:flex-row items-center justify-start lg:justify-center gap-6 lg:gap-10 pt-48 lg:pt-32 px-4 pb-20 z-30">
+        <div class="relative min-h-full flex flex-col lg:flex-row items-center justify-start lg:justify-center gap-6 lg:gap-10 pt-48 lg:pt-20 px-4 pb-20 z-30">
             <div class="glass-card w-full lg:w-[550px] p-6 lg:p-10 rounded-[2rem] lg:rounded-[3rem] relative">
                 <button onclick="document.getElementById('valMicro').scrollBy({left: -300, behavior: 'smooth'})" class="absolute left-2 lg:left-4 top-[35%] z-40 bg-black/40 p-2 rounded-full border border-white/10 hover:bg-cyan-500/50 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" stroke-width="2"/></svg></button>
                 <button onclick="document.getElementById('valMicro').scrollBy({left: 300, behavior: 'smooth'})" class="absolute right-2 lg:right-4 top-[35%] z-40 bg-black/40 p-2 rounded-full border border-white/10 hover:bg-cyan-500/50 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2"/></svg></button>
@@ -134,7 +139,7 @@
 
     <section class="game-stage" id="stage1">
         <div class="ambient-bg bg-cover bg-center" style="background-image: url('1124_EWC_CS_2_Announcement_Poster_16x9_e223e335f4_747b8f2671.jpg');"></div>
-        <div class="relative min-h-full flex flex-col lg:flex-row items-center justify-start lg:justify-center gap-6 lg:gap-10 pt-48 lg:pt-32 px-4 pb-20">
+        <div class="relative min-h-full flex flex-col lg:flex-row items-center justify-start lg:justify-center gap-6 lg:gap-10 pt-48 lg:pt-20 px-4 pb-20">
             <div class="glass-card w-full lg:w-[550px] p-6 lg:p-10 rounded-[2rem] lg:rounded-[3rem] relative text-center">
                 <div class="space-y-4 lg:space-y-6">
                     <img src="1124_EWC_CS_2_Announcement_Poster_16x9_e223e335f4_747b8f2671.jpg" class="w-full h-48 lg:h-64 object-cover rounded-2xl lg:rounded-3xl border border-white/10">
@@ -160,7 +165,7 @@
 
     <section class="game-stage" id="stage2">
         <div class="ambient-bg bg-cover bg-center" style="background-image: url('fn.jpg');"></div>
-        <div class="relative min-h-full flex flex-col lg:flex-row items-center justify-start lg:justify-center gap-6 lg:gap-10 pt-48 lg:pt-32 px-4 pb-20">
+        <div class="relative min-h-full flex flex-col lg:flex-row items-center justify-start lg:justify-center gap-6 lg:gap-10 pt-48 lg:pt-20 px-4 pb-20">
             <div class="glass-card w-full lg:w-[550px] p-6 lg:p-10 rounded-[2rem] lg:rounded-[3rem] text-center">
                 <img src="fn.jpg" class="w-full h-48 lg:h-64 object-cover rounded-2xl lg:rounded-3xl border border-white/10 mb-4 lg:mb-6">
                 <h2 class="font-orbitron text-2xl lg:text-4xl font-black uppercase text-fuchsia-500">Fortnite World Cup</h2>
