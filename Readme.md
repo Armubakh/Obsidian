@@ -42,5 +42,5 @@ If you wish to clone and run this project locally for development purposes, foll
 
 ### 1. Clone the Repository
 ```bash
-git clone [https://github.com/yourusername/obsidian-hub.git](https://github.com/yourusername/obsidian-hub.git)
+git clone https://github.com/Armubakh/Obsidian.git
 cd obsidian-hub
