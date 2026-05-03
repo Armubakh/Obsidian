@@ -149,8 +149,13 @@
                     </div>
                     
                     <div>
-                        <label class="font-orbitron text-[8px] lg:text-[9px] text-white/50 tracking-widest uppercase ml-2">Match ID (From Challonge)</label>
-                        <input type="text" id="targetMatchId" placeholder="e.g. 314592" class="w-full bg-black/50 border border-white/10 p-3 rounded-xl text-xs outline-none focus:border-cyan-400 text-white transition mt-1">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-orbitron text-[8px] lg:text-[9px] text-white/50 tracking-widest uppercase ml-2">Select Live Match</label>
+                            <button onclick="fetchLiveMatches()" class="text-[8px] text-cyan-400 hover:text-white transition uppercase font-bold tracking-widest">↻ Refresh</button>
+                        </div>
+                        <select id="targetMatchId" class="w-full bg-black/50 border border-white/10 p-3 rounded-xl text-xs outline-none focus:border-cyan-400 text-white transition mt-1 appearance-none">
+                            <option value="">Load a bracket first...</option>
+                        </select>
                     </div>
                 </div>
 
@@ -310,6 +315,48 @@
             } finally {
                 btn.innerText = "LOAD BRACKET";
                 btn.classList.remove('animate-pulse');
+            }
+        }
+        
+        async function fetchLiveMatches() {
+            const dropdown = document.getElementById('targetMatchId');
+            
+            // Get the active tournament URL/Name from your existing inputs
+            const activeTournamentId = document.getElementById('searchTourneyName').value || document.getElementById('customTourneyName').value; 
+
+            if (!activeTournamentId) {
+                alert("Please generate or load a tournament bracket first.");
+                return;
+            }
+
+            dropdown.innerHTML = '<option value="">Syncing with Challonge...</option>';
+            const token = localStorage.getItem('obsidian_token');
+
+            try {
+                const response = await fetch(`https://obsidian-oda1.onrender.com/api/get-matches?tournament_id=${activeTournamentId}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                const matches = await response.json();
+
+                if (response.ok) {
+                    dropdown.innerHTML = '<option value="">Select a match to report...</option>';
+                    
+                    if (matches.length === 0) {
+                        dropdown.innerHTML = '<option value="">No open matches found.</option>';
+                        return;
+                    }
+
+                    // Populate the dropdown with actual Match IDs
+                    matches.forEach(match => {
+                        dropdown.innerHTML += `<option value="${match.id}">Match ${match.identifier} (ID: ${match.id})</option>`;
+                    });
+                } else {
+                    dropdown.innerHTML = '<option value="">Failed to load matches.</option>';
+                }
+            } catch (error) {
+                console.error("Error fetching matches:", error);
+                dropdown.innerHTML = '<option value="">Connection error.</option>';
             }
         }
         

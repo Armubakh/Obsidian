@@ -403,6 +403,36 @@ app.post('/api/update-match', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Backend error communicating with Challonge." });
     }
 });
+
+// GET: Fetch open matches for a specific tournament
+app.get('/api/get-matches', authenticateToken, async (req, res) => {
+    const { tournament_id } = req.query;
+    const CHALLONGE_KEY = process.env.CHALLONGE_API_KEY;
+
+    if (!tournament_id) return res.status(400).json({ message: "Tournament ID required." });
+
+    try {
+        const challongeUrl = `https://api.challonge.com/v1/tournaments/${tournament_id}/matches.json?api_key=${CHALLONGE_KEY}&state=open`;
+        
+        const response = await fetch(challongeUrl);
+        const matches = await response.json();
+
+        if (response.ok) {
+            // Simplify the data for the frontend
+            const formattedMatches = matches.map(m => ({
+                id: m.match.id,
+                identifier: m.match.identifier, // e.g., "A", "B", "Round 1 Match 1"
+                state: m.match.state
+            }));
+            res.status(200).json(formattedMatches);
+        } else {
+            res.status(400).json({ message: "Failed to fetch matches from Challonge." });
+        }
+    } catch (error) {
+        console.error("Error fetching matches:", error);
+        res.status(500).json({ message: "Backend error." });
+    }
+});
 //  START SERVER 
 // Using process.env.PORT allows Render to assign the correct port dynamically[cite: 3].
 const PORT = process.env.PORT || 5000;
