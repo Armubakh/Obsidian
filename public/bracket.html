@@ -318,14 +318,22 @@
             }
         }
         
-        async function fetchLiveMatches() {
+async function fetchLiveMatches() {
             const dropdown = document.getElementById('targetMatchId');
             
-            // Get the active tournament URL/Name from your existing inputs
-            const activeTournamentId = document.getElementById('searchTourneyName').value || document.getElementById('customTourneyName').value; 
+            // 1. Find the loaded iframe and extract the unique Challonge ID from its URL
+            const iframe = document.querySelector('.bracket-container iframe');
+            if (!iframe || !iframe.src) {
+                alert("Please generate or load a tournament bracket first.");
+                return;
+            }
+
+            // This grabs "obsidian_cup_123" out of "https://challonge.com/obsidian_cup_123/module"
+            const matchRegex = iframe.src.match(/challonge\.com\/([^/]+)/);
+            const activeTournamentId = matchRegex ? matchRegex[1] : null;
 
             if (!activeTournamentId) {
-                alert("Please generate or load a tournament bracket first.");
+                alert("Could not detect the Challonge Tournament ID.");
                 return;
             }
 
@@ -365,10 +373,15 @@
             const t2Score = parseInt(document.getElementById('team2Score').value) || 0;
             const matchId = document.getElementById('targetMatchId').value;
             
-            // Gets the active tournament from the search or creation field
-            const activeTournamentId = document.getElementById('searchTourneyName').value || document.getElementById('customTourneyName').value || "YOUR_TOURNAMENT_URL_OR_ID_HERE"; 
+            // Extract the same unique Challonge ID for pushing the score
+            const iframe = document.querySelector('.bracket-container iframe');
+            if (!iframe || !iframe.src) return alert("Please generate or load a tournament bracket first.");
+            
+            const matchRegex = iframe.src.match(/challonge\.com\/([^/]+)/);
+            const activeTournamentId = matchRegex ? matchRegex[1] : null;
 
-            if (!matchId) return alert("Please enter a Match ID.");
+            if (!matchId) return alert("Please select a Match ID from the dropdown.");
+            if (!activeTournamentId) return alert("Could not detect the Challonge Tournament ID.");
 
             // Determine winner (simplified logic for 1v1 formats)
             const winnerId = t1Score > t2Score ? "TEAM_1_ID" : "TEAM_2_ID"; 
@@ -398,8 +411,7 @@
                 if (response.ok) {
                     alert("Score Updated! The bracket will now refresh.");
                     // Refresh the iframe to show the live changes
-                    const iframe = document.querySelector('iframe');
-                    if(iframe) iframe.src = iframe.src; 
+                    iframe.src = iframe.src; 
                 } else {
                     alert("Failed to update score. Check IDs and API limits.");
                 }
@@ -411,7 +423,6 @@
                 btn.classList.remove('animate-pulse');
             }
         }
-
         async function checkAuth() {
             const token = localStorage.getItem('obsidian_token');
             if (!token) {
