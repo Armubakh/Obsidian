@@ -38,30 +38,37 @@
 </head>
 <body>
 
-    <!-- NAVBAR WITH UPGRADED DROPDOWN -->
+    <!-- COMPLETELY REWRITTEN NAVBAR: Pure Flexbox, 0 Overlaps, No Clipping -->
     <nav class="fixed top-0 w-full z-50 p-4 lg:p-6 lg:px-8 flex flex-wrap items-center justify-between gap-y-4 gap-x-4 bg-gradient-to-b from-black/95 to-black/80 lg:to-transparent backdrop-blur-md">
 
+        <!-- LOGO -->
         <div class="flex items-center gap-3 lg:gap-4 cursor-pointer order-1 flex-shrink-0" onclick="window.location.href='index.html'">
             <img src="Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png" class="brand-logo w-10 lg:w-[45px]" alt="Logo">
             <h1 class="font-orbitron text-lg lg:text-xl font-black text-cyan-400 tracking-tighter uppercase hidden sm:block">Obsidian</h1>
         </div>
 
+        <!-- GAME TABS -->
         <div class="w-full lg:w-auto flex justify-center gap-6 lg:gap-10 font-orbitron order-4 lg:order-2 lg:flex-1">
             <span onclick="setGame(0)" class="game-tab active text-[11px] lg:text-[13px]" id="tab0">VALORANT</span>
             <span onclick="setGame(1)" class="game-tab text-white/40 hover:text-white text-[11px] lg:text-[13px]" id="tab1">CS2</span>
             <span onclick="setGame(2)" class="game-tab text-white/40 hover:text-white text-[11px] lg:text-[13px]" id="tab2">FORTNITE</span>
         </div>
 
-        <div class="flex items-center justify-start lg:justify-end gap-5 lg:gap-6 font-orbitron uppercase text-white/50 overflow-x-auto hide-scrollbar w-full lg:w-auto order-3 lg:order-3 flex-shrink-0 pb-2 lg:pb-0">
-            <a href="index.html" class="nav-link active text-cyan-400">HOME</a>
-            <a href="tournament.html" class="nav-link hover:text-white">MATCHES</a>
-            <a href="bracket.html" class="nav-link hover:text-white">BRACKETS</a>
-            <a href="marketplace.html" class="nav-link hover:text-white">MARKETPLACE</a>
-            <a href="chats.html" class="nav-link hover:text-white">CHATS</a>
+        <!-- RIGHT SIDE: Links & PFP Container (NO overflow here!) -->
+        <div class="flex items-center justify-between lg:justify-end gap-4 lg:gap-6 w-full lg:w-auto order-3 lg:order-3 flex-shrink-0 pb-2 lg:pb-0">
+            
+            <!-- LINKS ONLY (Scrollable on mobile) -->
+            <div class="flex items-center gap-5 lg:gap-6 font-orbitron uppercase text-white/50 overflow-x-auto hide-scrollbar flex-1 lg:flex-none">
+                <a href="index.html" class="nav-link active text-cyan-400">HOME</a>
+                <a href="tournament.html" class="nav-link hover:text-white">MATCHES</a>
+                <a href="bracket.html" class="nav-link hover:text-white">BRACKETS</a>
+                <a href="marketplace.html" class="nav-link hover:text-white">MARKETPLACE</a>
+                <a href="chats.html" class="nav-link hover:text-white">CHATS</a>
+            </div>
 
-            <!-- UPGRADED DROPDOWN -->
-            <div class="relative shrink-0 pb-2 lg:pb-0 z-50 ml-auto lg:ml-0">
-                <img id="navPfp" src="" alt="Profile" class="pfp-icon cursor-pointer" onclick="toggleDropdown(event)" onerror="this.src='https://i.pravatar.cc/300?u=obsidian'">
+            <!-- PROFILE DROPDOWN (Outside the scrollable box) -->
+            <div class="relative shrink-0 z-50 lg:ml-2 lg:border-l border-white/20 lg:pl-6">
+                <img id="navPfp" src="" alt="Profile" class="pfp-icon cursor-pointer border-[#8b5cf6] shadow-[0_0_15px_rgba(139,92,246,0.8)]" onclick="toggleDropdown(event)" onerror="this.src='https://i.pravatar.cc/300?u=obsidian'">
                 
                 <div id="profileMenu" class="profile-dropdown absolute right-0 top-full mt-4 w-64 bg-[rgba(10,10,25,0.98)] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-5 z-50">
                     <div class="border-b border-white/5 pb-4 mb-4">
