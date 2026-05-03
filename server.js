@@ -292,7 +292,7 @@ app.get('/api/products', async (req, res) => {
 // POST: Register for a Tournament
 app.post('/api/register-tournament', authenticateToken, async (req, res) => {
     const { game, tournament_name, in_game_name, contact_info, team_type } = req.body;
-    const user_id = req.user.id; // From the authenticateToken middleware
+    const user_id = req.user.id;
 
     try {
         const query = `
@@ -301,15 +301,17 @@ app.post('/api/register-tournament', authenticateToken, async (req, res) => {
             VALUES (?, ?, ?, ?, ?, ?)
         `;
         
-        db.query(query, [user_id, game, tournament_name, in_game_name, contact_info, team_type], (err, result) => {
-            if (err) {
-                console.error("Database error during registration:", err);
-                return res.status(500).json({ message: "Failed to register for tournament." });
-            }
-            res.status(200).json({ message: "Successfully registered!", id: result.insertId });
-        });
+        // Using modern async/await to talk to your database
+        await db.query(query, [user_id, game, tournament_name, in_game_name, contact_info, team_type]);
+        
+        // Instantly reply back to the frontend on success
+        res.status(200).json({ message: "Successfully registered!" });
+        
     } catch (error) {
-        res.status(500).json({ message: "Server error." });
+        console.error("Database error during registration:", error);
+        
+        // Instantly reply back to the frontend on failure
+        res.status(500).json({ message: "Database error. Check Render logs." });
     }
 });
 //  START SERVER 
