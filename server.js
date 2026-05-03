@@ -335,6 +335,37 @@ app.post('/api/save-bracket', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Failed to save tournament to database." });
     }
 });
+
+// GET: Find and load an existing bracket
+app.get('/api/get-bracket', authenticateToken, async (req, res) => {
+    const { name } = req.query;
+
+    if (!name) {
+        return res.status(400).json({ message: "Please provide a tournament name." });
+    }
+
+    try {
+        const query = `SELECT bracket_url FROM custom_tournaments WHERE tournament_name = ? LIMIT 1`;
+        
+        // Query the database
+        const [results] = await db.query(query, [name]);
+
+        // Note: If you are not using mysql2/promise and your db.query doesn't return an array like [results], 
+        // you might need to use a standard callback or adjust based on your exact DB setup.
+        // Assuming standard promise setup:
+        const rows = Array.isArray(results) ? results : [results]; // Failsafe for different DB wrappers
+
+        if (rows && rows.length > 0 && rows[0].bracket_url) {
+            res.status(200).json({ bracket_url: rows[0].bracket_url });
+        } else {
+            res.status(404).json({ message: "Tournament not found. Check the name and try again." });
+        }
+        
+    } catch (error) {
+        console.error("Database error fetching bracket:", error);
+        res.status(500).json({ message: "Database error. Check Render logs." });
+    }
+});
 //  START SERVER 
 // Using process.env.PORT allows Render to assign the correct port dynamically[cite: 3].
 const PORT = process.env.PORT || 5000;
