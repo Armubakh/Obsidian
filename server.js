@@ -366,6 +366,43 @@ app.get('/api/get-bracket', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Database error. Check Render logs." });
     }
 });
+// POST: Update Match Score via Challonge API
+app.post('/api/update-match', authenticateToken, async (req, res) => {
+    const { tournament_id, match_id, player1_score, player2_score, winner_id } = req.body;
+    
+    // Make sure you add CHALLONGE_API_KEY to your Render environment variables!
+    const CHALLONGE_KEY = process.env.CHALLONGE_API_KEY; 
+
+    try {
+        // Challonge expects scores formatted as "Player1Score-Player2Score"
+        const scores_csv = `${player1_score}-${player2_score}`;
+        
+        // Forward the request to Challonge
+        const challongeUrl = `https://api.challonge.com/v1/tournaments/${tournament_id}/matches/${match_id}.json?api_key=${CHALLONGE_KEY}`;
+        
+        const response = await fetch(challongeUrl, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                match: {
+                    scores_csv: scores_csv,
+                    winner_id: winner_id
+                }
+            })
+        });
+
+        if (response.ok) {
+            res.status(200).json({ message: "Match updated on Challonge successfully!" });
+        } else {
+            const errorData = await response.json();
+            console.error("Challonge Error:", errorData);
+            res.status(400).json({ message: "Failed to update bracket on Challonge." });
+        }
+    } catch (error) {
+        console.error("Server error updating match:", error);
+        res.status(500).json({ message: "Backend error communicating with Challonge." });
+    }
+});
 //  START SERVER 
 // Using process.env.PORT allows Render to assign the correct port dynamically[cite: 3].
 const PORT = process.env.PORT || 5000;
