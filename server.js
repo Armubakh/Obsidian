@@ -8,15 +8,15 @@ const path = require('path');
 
 const app = express();
 
-// --- IN-MEMORY CACHE SETUP ---
+//  IN-MEMORY CACHE SETUP 
 const matchCache = {}; 
 const CACHE_DURATION = 60 * 1000; 
 
-// --- CORS SETUP ---
+//  CORS SETUP 
 const corsOptions = {
     origin: [
         'http://localhost:5500', 
-        'https://obsidian-nine-ashy.vercel.app' // NO slash at the very end
+        'https://obsidian-nine-ashy.vercel.app' 
     ],
     optionsSuccessStatus: 200
 };
@@ -26,15 +26,15 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-// --- STATIC FILES ---
+//  STATIC FILES
 app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 
-// --- DEFAULT ROUTE ---
+//  DEFAULT ROUTE 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
-// --- CHALLONGE BRACKET GENERATOR ---
+//  CHALLONGE BRACKET GENERATOR 
 app.post('/api/bracket/create', async (req, res) => {
     try {
         const { tournament_name, game, teams } = req.body;
@@ -75,7 +75,7 @@ app.post('/api/bracket/create', async (req, res) => {
     }
 });
 
-// --- REGISTRATION ---
+// REGISTRATION 
 app.post('/api/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
@@ -93,7 +93,7 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// --- LOGIN ---
+//  LOGIN 
 app.post('/api/login', async (req, res) => {
     try {
         const { username, password } = req.body;
@@ -111,7 +111,7 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// --- FETCH USER PROFILE ---
+//  FETCH USER PROFILE 
 app.get('/api/profile', async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
@@ -136,7 +136,7 @@ app.get('/api/profile', async (req, res) => {
     }
 });
 
-// --- UPDATE PROFILE DATA ---
+//  UPDATE PROFILE DATA 
 app.post('/api/profile/update', async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
@@ -164,7 +164,7 @@ app.post('/api/profile/update', async (req, res) => {
     }
 });
 
-// --- GET CHAT CONTACTS ---
+// GET CHAT CONTACTS 
 app.get('/api/users', async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
@@ -178,7 +178,7 @@ app.get('/api/users', async (req, res) => {
     }
 });
 
-// --- GET MESSAGE HISTORY (INCLUDES GLOBAL CHAT ID 9999) ---
+// GET MESSAGE HISTORY (INCLUDES GLOBAL CHAT ID 9999) 
 app.get('/api/messages/:otherUserId', async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
@@ -210,7 +210,7 @@ app.get('/api/messages/:otherUserId', async (req, res) => {
     }
 });
 
-// --- SEND A MESSAGE ---
+// SEND A MESSAGE 
 app.post('/api/messages/send', async (req, res) => {
     try {
         const authHeader = req.headers.authorization;
@@ -230,7 +230,7 @@ app.post('/api/messages/send', async (req, res) => {
     }
 });
 
-// --- FETCH LIVE MATCHES (CACHED) ---
+//  FETCH LIVE MATCHES (CACHED) 
 app.get('/api/matches', async (req, res) => {
     try {
         const requestedGame = req.query.game ? req.query.game.toLowerCase() : 'all';
@@ -265,7 +265,7 @@ app.get('/api/matches', async (req, res) => {
     }
 });
 
-// --- MARKETPLACE PRODUCTS ---
+//  MARKETPLACE PRODUCTS 
 app.get('/api/products', async (req, res) => {
     try {
         const [inventory] = await db.query('SELECT * FROM products');
@@ -276,7 +276,30 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
-// --- START SERVER ---
+// POST: Register for a Tournament
+app.post('/api/register-tournament', authenticateToken, async (req, res) => {
+    const { game, tournament_name, in_game_name, contact_info, team_type } = req.body;
+    const user_id = req.user.id; // From the authenticateToken middleware
+
+    try {
+        const query = `
+            INSERT INTO tournament_registrations 
+            (user_id, game, tournament_name, in_game_name, contact_info, team_type) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        
+        db.query(query, [user_id, game, tournament_name, in_game_name, contact_info, team_type], (err, result) => {
+            if (err) {
+                console.error("Database error during registration:", err);
+                return res.status(500).json({ message: "Failed to register for tournament." });
+            }
+            res.status(200).json({ message: "Successfully registered!", id: result.insertId });
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Server error." });
+    }
+});
+//  START SERVER 
 // Using process.env.PORT allows Render to assign the correct port dynamically[cite: 3].
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
