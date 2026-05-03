@@ -34,6 +34,22 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
+const jwt = require('jsonwebtoken'); // Make sure you have this imported at the very top!
+
+// The missing security checkpoint function
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // Looks for "Bearer [TOKEN]"
+
+    if (!token) return res.status(401).json({ message: "Access Denied. Please log in." });
+
+    // Note: Make sure your .env file has a JWT_SECRET defined!
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ message: "Invalid or expired token." });
+        req.user = user; // Passes the user info to the next function
+        next();
+    });
+}
 //  CHALLONGE BRACKET GENERATOR 
 app.post('/api/bracket/create', async (req, res) => {
     try {
