@@ -33,9 +33,6 @@ app.use(express.static(path.join(__dirname, 'public'), { index: false }));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
-
-const jwt = require('jsonwebtoken'); // Make sure you have this imported at the very top!
-
 // The missing security checkpoint function
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
