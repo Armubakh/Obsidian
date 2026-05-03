@@ -9,11 +9,9 @@
     <style>
         body { font-family: 'Rajdhani', sans-serif; }
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
-        
         .neon-border { border: 1px solid rgba(168, 85, 247, 0.4); box-shadow: 0 0 25px rgba(168, 85, 247, 0.2); }
         .logo-container { position: relative; display: inline-block; z-index: 50; }
         .logo-img { width: 160px; height: 160px; object-fit: contain; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.5)); }
-
         .cascade-box {
             position: absolute; left: 150%; top: 50%;
             transform: translateY(-50%) translateX(-60px); width: 320px;
@@ -22,7 +20,6 @@
             opacity: 0; pointer-events: none; transition: all 1.4s cubic-bezier(0.19, 1, 0.22, 1);
             text-align: left; box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
         }
-
         .logo-container:hover .cascade-box { opacity: 1; transform: translateY(-50%) translateX(20px); pointer-events: auto; }
         .logo-container:hover .logo-img { transform: scale(1.05) rotate(2deg); filter: drop-shadow(0 0 40px rgba(34, 211, 238, 0.7)); }
         .button-glow:hover { box-shadow: 0 0 35px rgba(168, 85, 247, 0.7); filter: brightness(1.15); }
@@ -60,7 +57,8 @@
                             <input type="email" id="email" placeholder="Email Address" class="w-full rounded-2xl bg-white/5 border border-white/10 text-cyan-100 px-6 py-4 placeholder-cyan-500/20 focus:outline-none focus:border-cyan-500/50 transition-all">
                         </div>
                         <input type="text" id="user" placeholder="Username" required class="w-full rounded-2xl bg-white/5 border border-white/10 text-cyan-100 px-6 py-4 placeholder-cyan-500/20 focus:outline-none focus:border-cyan-500/50 transition-all">
-                        <input type="password" id="pass" placeholder="Password" required class="w-full rounded-2xl bg-white/5 border border-white/10 text-cyan-100 px-6 py-4 placeholder-cyan-500/20 focus:outline-none focus:border-cyan-500/50 transition-all">
+                        <!-- Corrected Boundaries in HTML -->
+                        <input type="password" id="pass" placeholder="Password" required minlength="8" maxlength="20" class="w-full rounded-2xl bg-white/5 border border-white/10 text-cyan-100 px-6 py-4 placeholder-cyan-500/20 focus:outline-none focus:border-cyan-500/50 transition-all">
                     </div>
 
                     <button type="submit" class="w-full py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-cyan-500 font-orbitron font-black text-[11px] tracking-[0.4em] button-glow transition-all">
@@ -122,11 +120,18 @@
             const password = document.getElementById('pass').value;
             const email = document.getElementById('email').value;
 
-            // POINTED TO NEW RENDER URL
-            const endpoint = isLogin ? 'https://obsidian-oda1.onrender.com/api/login' : 'https://obsidian-oda1.onrender.com/api/register';
+            // Boundary Check with sync'd values[cite: 8]
+            if (password.length < 8 || password.length > 20) {
+                alert("Boundary Error: Password must be between 8 and 20 characters.");
+                return;
+            }
+
+            // Corrected: Payload is defined before use[cite: 8]
             const payload = { username, password };
             if (!isLogin) payload.email = email;
 
+            const endpoint = isLogin ? 'https://obsidian-oda1.onrender.com/api/login' : 'https://obsidian-oda1.onrender.com/api/register';
+            
             try {
                 const response = await fetch(endpoint, {
                     method: 'POST',

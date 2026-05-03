@@ -16,14 +16,17 @@
         .product-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; }
         .product-card.hidden { display: none; }
         .product-card:hover { transform: translateY(-5px); border-color: #22d3ee; box-shadow: 0 10px 30px -10px rgba(34, 211, 238, 0.3); }
-        .brand-logo { width: 45px; filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5)); transition: transform 0.3s ease; }
+        .brand-logo { filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.5)); transition: transform 0.3s ease; }
         .brand-logo:hover { transform: scale(1.1); }
-        .nav-link { font-size: 10px; font-weight: 900; letter-spacing: 0.4em; cursor: pointer; transition: all 0.3s ease; }
+        .nav-link { font-size: 10px; font-weight: 900; letter-spacing: 0.2em; cursor: pointer; transition: all 0.3s ease; white-space: nowrap; }
+        @media (min-width: 1024px) { .nav-link { letter-spacing: 0.4em; } }
         .nav-link.active { color: #8b5cf6; text-decoration: underline; text-underline-offset: 8px; text-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
         
         .filter-checkbox { display: none; }
-        .filter-label { display: flex; align-items: center; gap: 1rem; cursor: pointer; }
-        .filter-box { width: 24px; height: 24px; border-radius: 4px; display: inline-block; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s ease; opacity: 0.5; }
+        .filter-label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+        @media (min-width: 1024px) { .filter-label { gap: 1rem; } }
+        .filter-box { width: 20px; height: 20px; border-radius: 4px; display: inline-block; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s ease; opacity: 0.5; }
+        @media (min-width: 1024px) { .filter-box { width: 24px; height: 24px; } }
         .filter-checkbox:checked + .filter-label .filter-box { opacity: 1; border-color: #fff; transform: scale(1.1); box-shadow: 0 0 10px rgba(255,255,255,0.3); }
         .color-1 { background: linear-gradient(135deg, #a855f7, #3b82f6); }
         .color-2 { background: #8b5cf6; }
@@ -34,100 +37,107 @@
         .pfp-icon:hover { transform: scale(1.1); border-color: #fff; }
         .profile-dropdown { transform-origin: top right; transition: all 0.2s ease; transform: scale(0.95); opacity: 0; pointer-events: none; }
         .profile-dropdown.show { transform: scale(1); opacity: 1; pointer-events: auto; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center">
 
     <div class="synth-bg"><div class="synth-grid"></div></div>
 
-    <nav class="fixed top-0 w-full z-50 p-6 px-12 flex justify-between items-center bg-gradient-to-b from-black/90 to-transparent backdrop-blur-sm">
-        <div class="flex items-center gap-4 cursor-pointer" onclick="window.location.href='index.html'">
-            <img src="Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png" class="brand-logo" alt="Logo">
+    <!-- RESPONSIVE NAVBAR -->
+    <nav class="fixed top-0 w-full z-50 p-4 lg:p-6 lg:px-12 flex flex-wrap justify-between items-center gap-y-4 bg-gradient-to-b from-black/95 to-black/80 lg:to-transparent backdrop-blur-md">
+        
+        <div class="flex items-center gap-4 cursor-pointer order-1" onclick="window.location.href='index.html'">
+            <img src="Gemini_Generated_Image_vhy17gvhy17gvhy1-removebg-preview.png" class="brand-logo w-10 lg:w-[45px]" alt="Logo">
             <div>
-                <h1 class="font-orbitron text-xl font-black text-cyan-400 tracking-tighter uppercase">Obsidian</h1>
-                <p class="text-[8px] text-fuchsia-500 tracking-[0.4em] uppercase font-bold">Gaming Redefined</p>
+                <h1 class="font-orbitron text-lg lg:text-xl font-black text-cyan-400 tracking-tighter uppercase">Obsidian</h1>
+                <p class="text-[7px] lg:text-[8px] text-fuchsia-500 tracking-[0.4em] uppercase font-bold">Gaming Redefined</p>
             </div>
         </div>
         
-        <div class="flex items-center gap-8 font-orbitron uppercase text-white/50 tracking-[0.4em]">
+        <div class="relative order-2 lg:order-3">
+            <img id="navPfp" src="" alt="Profile" class="pfp-icon cursor-pointer" onclick="toggleDropdown(event)" onerror="this.src='https://i.pravatar.cc/300?u=obsidian'">
+            <div id="profileMenu" class="profile-dropdown absolute right-0 mt-4 w-64 bg-[rgba(10,10,25,0.95)] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-50">
+                <div class="px-4 py-3 border-b border-white/5 mb-2">
+                    <p class="text-[10px] tracking-widest text-white/40 uppercase">Signed in as</p>
+                    <p id="dropdownName" class="font-bold text-cyan-400 text-sm truncate">User</p>
+                </div>
+                <button onclick="window.location.href='portfolio.html'" class="w-full text-left px-4 py-3 text-[10px] font-bold text-white hover:bg-white/5 rounded-xl transition tracking-widest uppercase flex items-center gap-2">
+                    <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                    Edit Profile
+                </button>
+                <button onclick="handleLogout()" class="w-full text-left px-4 py-3 text-[10px] font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition tracking-widest uppercase flex items-center gap-2 mt-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Log Out
+                </button>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6 lg:gap-8 font-orbitron uppercase text-white/50 overflow-x-auto hide-scrollbar w-full lg:w-auto order-3 lg:order-2 pb-2 lg:pb-0">
             <a href="index.html" class="nav-link hover:text-white">HOME</a>
             <a href="tournament.html" class="nav-link hover:text-white">MATCHES</a>
             <a href="bracket.html" class="nav-link hover:text-white">BRACKETS</a>
             <a href="marketplace.html" class="nav-link active text-fuchsia-500">MARKETPLACE</a>
             <a href="chats.html" class="nav-link hover:text-white">CHATS</a>
-            
-            <div class="relative">
-                <img id="navPfp" src="" alt="Profile" class="pfp-icon" onclick="toggleDropdown(event)" onerror="this.src='https://i.pravatar.cc/300?u=obsidian'">
-                <div id="profileMenu" class="profile-dropdown absolute right-0 mt-4 w-64 bg-[rgba(10,10,25,0.95)] backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl p-2 z-50">
-                    <div class="px-4 py-3 border-b border-white/5 mb-2">
-                        <p class="text-[10px] tracking-widest text-white/40 uppercase">Signed in as</p>
-                        <p id="dropdownName" class="font-bold text-cyan-400 text-sm truncate">User</p>
-                    </div>
-                    <button onclick="window.location.href='portfolio.html'" class="w-full text-left px-4 py-3 text-[10px] font-bold text-white hover:bg-white/5 rounded-xl transition tracking-widest uppercase flex items-center gap-2">
-                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                        Edit Profile
-                    </button>
-                    <button onclick="handleLogout()" class="w-full text-left px-4 py-3 text-[10px] font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition tracking-widest uppercase flex items-center gap-2 mt-1">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        Log Out
-                    </button>
-                </div>
-            </div>
         </div>
     </nav>
 
-    <main class="w-full max-w-7xl mt-32 mb-20 px-6 flex flex-col lg:flex-row gap-8">
+    <!-- MAIN GRID: Stacked on mobile -->
+    <main class="w-full max-w-7xl mt-40 lg:mt-32 mb-20 px-4 lg:px-6 flex flex-col lg:flex-row gap-6 lg:gap-8">
         
-        <aside class="w-full lg:w-1/4 glass-card rounded-[2rem] p-8 h-fit sticky top-32">
-            <h3 class="font-orbitron text-lg font-black tracking-widest mb-4 uppercase text-white">Search</h3>
-            <input type="text" id="searchInput" placeholder="Search gear, accounts..." class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-xs outline-none focus:border-cyan-400 text-white mb-10 transition">
+        <aside class="w-full lg:w-1/4 glass-card rounded-[2rem] p-6 lg:p-8 h-fit lg:sticky top-40 lg:top-32">
+            <h3 class="font-orbitron text-base lg:text-lg font-black tracking-widest mb-4 uppercase text-white">Search</h3>
+            <input type="text" id="searchInput" placeholder="Search gear, accounts..." class="w-full bg-white/5 border border-white/10 p-3 lg:p-4 rounded-xl text-xs outline-none focus:border-cyan-400 text-white mb-6 lg:mb-10 transition">
 
-            <h3 class="font-orbitron text-lg font-black tracking-widest mb-6 uppercase text-white">Filters</h3>
+            <h3 class="font-orbitron text-base lg:text-lg font-black tracking-widest mb-4 lg:mb-6 uppercase text-white">Filters</h3>
             
-            <div class="flex flex-col gap-6 mb-10" id="filterContainer">
-                <div>
+            <div class="flex flex-wrap lg:flex-col gap-4 lg:gap-6 mb-6 lg:mb-10" id="filterContainer">
+                <div class="w-[45%] lg:w-full">
                     <input type="checkbox" id="filter-all" class="filter-checkbox" value="all" checked>
                     <label for="filter-all" class="filter-label group">
                         <span class="filter-box color-4"></span>
-                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">All Products</span>
+                        <span class="font-orbitron text-[10px] lg:text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">All Products</span>
                     </label>
                 </div>
-                <div>
+                <div class="w-[45%] lg:w-full">
                     <input type="checkbox" id="filter-hardware" class="filter-checkbox" value="hardware">
                     <label for="filter-hardware" class="filter-label group">
                         <span class="filter-box color-1"></span>
-                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Hardware</span>
+                        <span class="font-orbitron text-[10px] lg:text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Hardware</span>
                     </label>
                 </div>
-                <div>
+                <div class="w-[45%] lg:w-full">
                     <input type="checkbox" id="filter-accounts" class="filter-checkbox" value="account">
                     <label for="filter-accounts" class="filter-label group">
                         <span class="filter-box color-2"></span>
-                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Accounts</span>
+                        <span class="font-orbitron text-[10px] lg:text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Accounts</span>
                     </label>
                 </div>
-                <div>
+                <div class="w-[45%] lg:w-full">
                     <input type="checkbox" id="filter-skins" class="filter-checkbox" value="skins">
                     <label for="filter-skins" class="filter-label group">
                         <span class="filter-box color-3"></span>
-                        <span class="font-orbitron text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Skins</span>
+                        <span class="font-orbitron text-[10px] lg:text-sm font-bold tracking-widest uppercase text-white/70 group-hover:text-white transition">Skins</span>
                     </label>
                 </div>
             </div>
-            <hr class="border-white/10 mb-6">
-            <div class="flex justify-between items-center text-xs font-orbitron font-bold text-white/50">
+            
+            <hr class="border-white/10 mb-4 lg:mb-6">
+            <div class="flex flex-wrap justify-between items-center text-[10px] lg:text-xs font-orbitron font-bold text-white/50 gap-2">
                 <label class="flex items-center gap-2 cursor-pointer hover:text-white transition">
-                    <input type="radio" name="sort" class="accent-cyan-400 w-4 h-4" checked> High to Low
+                    <input type="radio" name="sort" class="accent-cyan-400 w-3 h-3 lg:w-4 lg:h-4" checked> High to Low
                 </label>
                 <label class="flex items-center gap-2 cursor-pointer hover:text-white transition">
-                    <input type="radio" name="sort" class="accent-cyan-400 w-4 h-4"> Low to High
+                    <input type="radio" name="sort" class="accent-cyan-400 w-3 h-3 lg:w-4 lg:h-4"> Low to High
                 </label>
             </div>
         </aside>
 
-        <!-- Empty Grid waiting for the database to inject the products! -->
-        <section class="w-full lg:w-3/4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="productGrid">
-            
+        <!-- PRODUCT GRID -->
+        <section class="w-full lg:w-3/4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 lg:gap-6" id="productGrid">
+            <!-- Dynamically populated -->
         </section>
     </main>
 
@@ -140,7 +150,6 @@
             }
             
             try {
-                // POINTED TO NEW RENDER URL
                 const response = await fetch('https://obsidian-oda1.onrender.com/api/profile', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -186,10 +195,9 @@
             const grid = document.getElementById('productGrid');
 
             async function fetchProducts() {
-                grid.innerHTML = '<p class="text-cyan-400 font-orbitron animate-pulse col-span-full text-center py-10 tracking-widest uppercase">Syncing with Obsidian Inventory...</p>';
+                grid.innerHTML = '<p class="text-cyan-400 font-orbitron animate-pulse col-span-full text-center py-10 tracking-widest uppercase text-xs md:text-sm">Syncing with Obsidian Inventory...</p>';
 
                 try {
-                    // POINTED TO NEW RENDER URL
                     const response = await fetch('https://obsidian-oda1.onrender.com/api/products');
                     if (!response.ok) throw new Error('Failed to fetch inventory');
                     const dbProducts = await response.json();
@@ -197,7 +205,7 @@
                     grid.innerHTML = ''; 
 
                     if(dbProducts.length === 0) {
-                        grid.innerHTML = '<p class="text-white/50 text-center col-span-full font-orbitron uppercase tracking-widest">Inventory is currently empty.</p>';
+                        grid.innerHTML = '<p class="text-white/50 text-center col-span-full font-orbitron uppercase tracking-widest text-xs">Inventory is currently empty.</p>';
                         return;
                     }
 
@@ -209,20 +217,20 @@
                         const priceTag = isHardware ? `Rs ${parseInt(prod.price).toLocaleString()}` : `$${prod.price}`;
                         
                         const actionBtn = isHardware 
-                            ? `<button class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:scale-[1.02] transition shadow-[0_0_15px_rgba(6,182,212,0.4)] text-white px-6 py-3 rounded-xl font-orbitron text-[10px] tracking-widest font-black uppercase text-center w-full mt-4">Purchase Item</button>`
-                            : `<a href="chats.html?chat=9999" class="bg-white/10 hover:bg-white/20 border border-white/20 transition text-white px-6 py-3 rounded-xl font-orbitron text-[10px] tracking-widest font-black uppercase text-center block w-full mt-4">Message Seller</a>`;
+                            ? `<button class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:scale-[1.02] transition shadow-[0_0_15px_rgba(6,182,212,0.4)] text-white px-4 md:px-6 py-3 rounded-xl font-orbitron text-[9px] md:text-[10px] tracking-widest font-black uppercase text-center w-full mt-4">Purchase Item</button>`
+                            : `<a href="chats.html?chat=9999" class="bg-white/10 hover:bg-white/20 border border-white/20 transition text-white px-4 md:px-6 py-3 rounded-xl font-orbitron text-[9px] md:text-[10px] tracking-widest font-black uppercase text-center block w-full mt-4">Message Seller</a>`;
 
                         const card = `
-                        <div class="product-card rounded-[2rem] p-6 flex flex-col relative overflow-hidden group ${isHardware ? '' : 'border-fuchsia-500/30'}" data-category="${prod.category.toLowerCase()}">
-                            <div class="w-full h-40 bg-black/40 rounded-xl mb-4 p-4 flex items-center justify-center relative overflow-hidden">
-                                <span class="absolute top-2 left-2 ${badgeColor} text-[8px] font-bold px-2 py-1 rounded uppercase tracking-widest z-10">${prod.category}</span>
-                                <img src="${prod.image_url}" alt="${prod.title}" class="object-contain h-24 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:scale-110 transition duration-500">
+                        <div class="product-card rounded-[1.5rem] lg:rounded-[2rem] p-5 lg:p-6 flex flex-col relative overflow-hidden group ${isHardware ? '' : 'border-fuchsia-500/30'}" data-category="${prod.category.toLowerCase()}">
+                            <div class="w-full h-32 md:h-40 bg-black/40 rounded-xl mb-4 p-4 flex items-center justify-center relative overflow-hidden">
+                                <span class="absolute top-2 left-2 ${badgeColor} text-[7px] md:text-[8px] font-bold px-2 py-1 rounded uppercase tracking-widest z-10">${prod.category}</span>
+                                <img src="${prod.image_url}" alt="${prod.title}" class="object-contain h-20 md:h-24 drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:scale-110 transition duration-500">
                             </div>
-                            <h4 class="font-orbitron text-lg font-black uppercase text-white truncate" title="${prod.title}">${prod.title}</h4>
-                            <p class="text-[10px] text-white/40 font-mono mt-2 mb-4 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> ${prod.stock_status}</p>
+                            <h4 class="font-orbitron text-base md:text-lg font-black uppercase text-white truncate" title="${prod.title}">${prod.title}</h4>
+                            <p class="text-[9px] md:text-[10px] text-white/40 font-mono mt-2 mb-4 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> ${prod.stock_status}</p>
                             
                             <div class="mt-auto">
-                                <div><p class="text-[9px] text-white/50 uppercase tracking-widest mb-1">Price</p><p class="font-orbitron text-xl font-black ${priceColor}">${priceTag}</p></div>
+                                <div><p class="text-[8px] md:text-[9px] text-white/50 uppercase tracking-widest mb-1">Price</p><p class="font-orbitron text-lg md:text-xl font-black ${priceColor}">${priceTag}</p></div>
                                 ${actionBtn}
                             </div>
                         </div>`;
@@ -239,7 +247,7 @@
 
                 } catch (err) {
                     console.error("Marketplace Error:", err);
-                    grid.innerHTML = '<p class="text-red-500 text-center col-span-full font-orbitron tracking-widest uppercase">Database connection failed.</p>';
+                    grid.innerHTML = '<p class="text-red-500 text-center col-span-full font-orbitron tracking-widest uppercase text-xs">Database connection failed.</p>';
                 }
             }
 

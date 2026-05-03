@@ -235,7 +235,7 @@
                 let url = new URL('https://obsidian-oda1.onrender.com/api/matches');
                 
                 if (!isAllChecked && activeCategories.length > 0) {
-                    url.searchParams.append('game', activeCategories[0]);
+                    url.searchParams.append('game', activeCategories.join(','));
                 }
 
                 fetch(url.toString())
