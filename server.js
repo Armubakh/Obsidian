@@ -314,6 +314,27 @@ app.post('/api/register-tournament', authenticateToken, async (req, res) => {
         res.status(500).json({ message: "Database error. Check Render logs." });
     }
 });
+
+// POST: Save a custom generated bracket
+app.post('/api/save-bracket', authenticateToken, async (req, res) => {
+    const { tournament_name, game, format, teams_count, bracket_url } = req.body;
+    const user_id = req.user.id;
+
+    try {
+        const query = `
+            INSERT INTO custom_tournaments 
+            (user_id, tournament_name, game, format, teams_count, bracket_url) 
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+        
+        await db.query(query, [user_id, tournament_name, game, format, teams_count, bracket_url]);
+        res.status(200).json({ message: "Tournament and Bracket saved successfully!" });
+        
+    } catch (error) {
+        console.error("Database error saving bracket:", error);
+        res.status(500).json({ message: "Failed to save tournament to database." });
+    }
+});
 //  START SERVER 
 // Using process.env.PORT allows Render to assign the correct port dynamically[cite: 3].
 const PORT = process.env.PORT || 5000;
